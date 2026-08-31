@@ -5,15 +5,16 @@ import HabitCard from "@/app/components/HabitCard";
 import { makeMockHabit } from "@/test/mock-data";
 
 describe("HabitCard", () => {
-  it("renders the habit name and streak", () => {
+  it("renders the habit name, category, and streak", () => {
     render(
       <HabitCard
-        habit={makeMockHabit({ name: "Meditate", streak: 5 })}
+        habit={makeMockHabit({ name: "Meditate", category: "Health", streak: 5 })}
         onComplete={vi.fn()}
         onDelete={vi.fn()}
       />
     );
     expect(screen.getByText("Meditate")).toBeInTheDocument();
+    expect(screen.getByText("Health")).toBeInTheDocument();
     expect(screen.getByText(/5 days streak/)).toBeInTheDocument();
   });
 
