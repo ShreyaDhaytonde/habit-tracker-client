@@ -1,26 +1,36 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import HabitForm from "@/app/components/HabitForm";
 import HabitList from "@/app/components/HabitList";
 import { completeHabit, createHabit, deleteHabit, listHabits } from "@/app/lib/api";
 import type { Habit } from "@/app/types/HabitTypes";
+import { HABIT_CATEGORIES } from "@/app/types/HabitTypes";
 
 export default function Home() {
   const [habits, setHabits] = useState<Habit[]>([]);
+  const [categoryFilter, setCategoryFilter] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    listHabits()
+  const loadHabits = useCallback((category: string) => {
+    setLoading(true);
+    setError(null);
+    listHabits(category || undefined)
       .then(setHabits)
       .catch(() => setError("Could not load habits. Is the API running?"))
       .finally(() => setLoading(false));
   }, []);
 
-  async function handleCreate(name: string) {
-    const habit = await createHabit(name);
-    setHabits((prev) => [...prev, habit]);
+  useEffect(() => {
+    loadHabits(categoryFilter);
+  }, [categoryFilter, loadHabits]);
+
+  async function handleCreate(name: string, category: string) {
+    const habit = await createHabit(name, category);
+    if (!categoryFilter || categoryFilter === habit.category) {
+      setHabits((prev) => [...prev, habit]);
+    }
   }
 
   async function handleComplete(id: number) {
@@ -42,6 +52,26 @@ export default function Home() {
         </div>
 
         <HabitForm onCreate={handleCreate} />
+
+        <div className="flex items-center gap-2">
+          <label htmlFor="category-filter" className="text-sm text-zinc-500">
+            Filter by category
+          </label>
+          <select
+            id="category-filter"
+            aria-label="Filter by category"
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+            className="rounded-md border border-zinc-300 px-2 py-1 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+          >
+            <option value="">All</option>
+            {HABIT_CATEGORIES.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+        </div>
 
         {loading && <p className="text-sm text-zinc-500">Loading habits…</p>}
         {error && <p className="text-sm text-red-600">{error}</p>}

@@ -10,7 +10,12 @@ export default function HabitCard({ habit, onComplete, onDelete }: HabitCardProp
   return (
     <li className="flex items-center justify-between rounded-lg border border-zinc-200 px-4 py-3 dark:border-zinc-800">
       <div>
-        <p className="font-medium">{habit.name}</p>
+        <div className="flex items-center gap-2">
+          <p className="font-medium">{habit.name}</p>
+          <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
+            {habit.category}
+          </span>
+        </div>
         <p className="text-sm text-zinc-500">
           🔥 {habit.streak} day{habit.streak === 1 ? "" : "s"} streak
         </p>

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { completeHabit, createHabit, deleteHabit, listHabits } from "@/app/lib/api";
+import { completeHabit, createHabit, deleteHabit, listCategories, listHabits } from "@/app/lib/api";
 import { MOCK_HABITS, makeMockHabit } from "@/test/mock-data";
 
 describe("habits api client", () => {
@@ -24,8 +24,8 @@ describe("habits api client", () => {
     );
   });
 
-  it("createHabit posts the name as JSON", async () => {
-    const created = makeMockHabit({ id: 9, name: "Journal" });
+  it("createHabit posts the name and category as JSON", async () => {
+    const created = makeMockHabit({ id: 9, name: "Journal", category: "Personal" });
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
       status: 201,
@@ -33,12 +33,45 @@ describe("habits api client", () => {
     });
     vi.stubGlobal("fetch", fetchMock);
 
-    const result = await createHabit("Journal");
+    const result = await createHabit("Journal", "Personal");
 
     expect(result).toEqual(created);
     const [, init] = fetchMock.mock.calls[0];
     expect(init.method).toBe("POST");
-    expect(JSON.parse(init.body)).toEqual({ name: "Journal" });
+    expect(JSON.parse(init.body)).toEqual({ name: "Journal", category: "Personal" });
+  });
+
+  it("listHabits includes the category as a query param when given", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => MOCK_HABITS,
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await listHabits("Health");
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      expect.stringContaining("/habits?category=Health"),
+      expect.anything()
+    );
+  });
+
+  it("listCategories fetches the distinct category list", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ["Health", "Learning"],
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await listCategories();
+
+    expect(result).toEqual(["Health", "Learning"]);
+    expect(fetchMock).toHaveBeenCalledWith(
+      expect.stringContaining("/habits/categories"),
+      expect.anything()
+    );
   });
 
   it("completeHabit posts to the complete endpoint", async () => {

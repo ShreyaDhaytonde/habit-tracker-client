@@ -16,14 +16,19 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return res.json() as Promise<T>;
 }
 
-export function listHabits(): Promise<Habit[]> {
-  return request<Habit[]>("/habits");
+export function listHabits(category?: string): Promise<Habit[]> {
+  const query = category ? `?category=${encodeURIComponent(category)}` : "";
+  return request<Habit[]>(`/habits${query}`);
 }
 
-export function createHabit(name: string): Promise<Habit> {
+export function listCategories(): Promise<string[]> {
+  return request<string[]>("/habits/categories");
+}
+
+export function createHabit(name: string, category: string): Promise<Habit> {
   return request<Habit>("/habits", {
     method: "POST",
-    body: JSON.stringify({ name }),
+    body: JSON.stringify({ name, category }),
   });
 }
 
