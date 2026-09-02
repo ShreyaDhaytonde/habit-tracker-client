@@ -1,4 +1,4 @@
-import type { Habit } from "@/app/types/HabitTypes";
+import type { Habit, HabitStats } from "@/app/types/HabitTypes";
 
 export function makeMockHabit(overrides: Partial<Habit> = {}): Habit {
   return {
@@ -10,6 +10,19 @@ export function makeMockHabit(overrides: Partial<Habit> = {}): Habit {
     streak: 0,
     completed_today: false,
     completed_days: [],
+    ...overrides,
+  };
+}
+
+export function makeMockStats(overrides: Partial<HabitStats> = {}): HabitStats {
+  return {
+    total_habits: 3,
+    completed_today: 2,
+    active_streaks: 2,
+    best_streak: 5,
+    total_completions: 12,
+    weekly_completion_rate: 60,
+    by_category: { Health: 2, Learning: 1 },
     ...overrides,
   };
 }

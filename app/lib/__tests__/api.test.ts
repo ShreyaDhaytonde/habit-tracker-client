@@ -1,6 +1,13 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { completeHabit, createHabit, deleteHabit, listCategories, listHabits } from "@/app/lib/api";
-import { MOCK_HABITS, makeMockHabit } from "@/test/mock-data";
+import {
+  completeHabit,
+  createHabit,
+  deleteHabit,
+  getHabitStats,
+  listCategories,
+  listHabits,
+} from "@/app/lib/api";
+import { MOCK_HABITS, makeMockHabit, makeMockStats } from "@/test/mock-data";
 
 describe("habits api client", () => {
   afterEach(() => {
@@ -79,6 +86,24 @@ describe("habits api client", () => {
     expect(result).toEqual(["Health", "Learning"]);
     expect(fetchMock).toHaveBeenCalledWith(
       expect.stringContaining("/habits/categories"),
+      expect.anything()
+    );
+  });
+
+  it("getHabitStats fetches the aggregate stats", async () => {
+    const stats = makeMockStats();
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => stats,
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await getHabitStats();
+
+    expect(result).toEqual(stats);
+    expect(fetchMock).toHaveBeenCalledWith(
+      expect.stringContaining("/habits/stats"),
       expect.anything()
     );
   });

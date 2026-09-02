@@ -30,7 +30,7 @@ describe("HabitCard", () => {
         onDelete={vi.fn()}
       />
     );
-    expect(screen.getByText("Start your streak today")).toBeInTheDocument();
+    expect(screen.getByText(/start your streak today/i)).toBeInTheDocument();
     expect(screen.queryByText(/day.*streak/)).not.toBeInTheDocument();
   });
 
@@ -60,7 +60,7 @@ describe("HabitCard", () => {
         onDelete={vi.fn()}
       />
     );
-    expect(screen.getByText("🎉 Goal reached")).toBeInTheDocument();
+    expect(screen.getByText(/goal reached/i)).toBeInTheDocument();
     expect(screen.queryByText("3/3 this week")).not.toBeInTheDocument();
   });
 

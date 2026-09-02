@@ -1,4 +1,4 @@
-import type { Habit } from "@/app/types/HabitTypes";
+import type { Habit, HabitStats } from "@/app/types/HabitTypes";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
 
@@ -23,6 +23,10 @@ export function listHabits(category?: string): Promise<Habit[]> {
 
 export function listCategories(): Promise<string[]> {
   return request<string[]>("/habits/categories");
+}
+
+export function getHabitStats(): Promise<HabitStats> {
+  return request<HabitStats>("/habits/stats");
 }
 
 export function createHabit(
