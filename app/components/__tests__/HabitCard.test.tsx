@@ -40,6 +40,29 @@ describe("HabitCard", () => {
     expect(bar).toHaveAttribute("aria-valuemax", "3");
   });
 
+  it("shows a goal reached badge once the weekly target is met", () => {
+    render(
+      <HabitCard
+        habit={makeMockHabit({ name: "Run", target_per_week: 3, completed_this_week: 3 })}
+        onComplete={vi.fn()}
+        onDelete={vi.fn()}
+      />
+    );
+    expect(screen.getByText("🎉 Goal reached")).toBeInTheDocument();
+    expect(screen.queryByText("3/3 this week")).not.toBeInTheDocument();
+  });
+
+  it("does not show the goal reached badge before the target is met", () => {
+    render(
+      <HabitCard
+        habit={makeMockHabit({ name: "Run", target_per_week: 3, completed_this_week: 2 })}
+        onComplete={vi.fn()}
+        onDelete={vi.fn()}
+      />
+    );
+    expect(screen.queryByText("🎉 Goal reached")).not.toBeInTheDocument();
+  });
+
   it("calls onComplete with the habit id when marking done", async () => {
     const onComplete = vi.fn();
     render(

@@ -7,6 +7,8 @@ interface HabitCardProps {
 }
 
 export default function HabitCard({ habit, onComplete, onDelete }: HabitCardProps) {
+  const goalReached = habit.completed_this_week >= habit.target_per_week;
+
   return (
     <li className="flex items-center justify-between rounded-lg border border-zinc-200 px-4 py-3 dark:border-zinc-800">
       <div>
@@ -29,7 +31,7 @@ export default function HabitCard({ habit, onComplete, onDelete }: HabitCardProp
             className="h-1.5 w-24 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800"
           >
             <div
-              className="h-full rounded-full bg-emerald-600"
+              className={`h-full rounded-full ${goalReached ? "bg-amber-500" : "bg-emerald-600"}`}
               style={{
                 width: `${Math.min(
                   100,
@@ -39,7 +41,9 @@ export default function HabitCard({ habit, onComplete, onDelete }: HabitCardProp
             />
           </div>
           <span className="text-xs text-zinc-500">
-            {habit.completed_this_week}/{habit.target_per_week} this week
+            {goalReached
+              ? "🎉 Goal reached"
+              : `${habit.completed_this_week}/${habit.target_per_week} this week`}
           </span>
         </div>
       </div>
