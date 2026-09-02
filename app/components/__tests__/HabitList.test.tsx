@@ -14,4 +14,17 @@ describe("HabitList", () => {
     expect(screen.getByText("Drink water")).toBeInTheDocument();
     expect(screen.getByText("Read")).toBeInTheDocument();
   });
+
+  it("shows a custom empty message when one is provided", () => {
+    render(
+      <HabitList
+        habits={[]}
+        onComplete={vi.fn()}
+        onDelete={vi.fn()}
+        emptyMessage='No habits in the "Health" category yet.'
+      />
+    );
+    expect(screen.getByText('No habits in the "Health" category yet.')).toBeInTheDocument();
+    expect(screen.queryByText(/no habits yet — add one above/i)).not.toBeInTheDocument();
+  });
 });

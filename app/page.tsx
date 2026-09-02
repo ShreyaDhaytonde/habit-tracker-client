@@ -76,7 +76,16 @@ export default function Home() {
         {loading && <p className="text-sm text-zinc-500">Loading habits…</p>}
         {error && <p className="text-sm text-red-600">{error}</p>}
         {!loading && !error && (
-          <HabitList habits={habits} onComplete={handleComplete} onDelete={handleDelete} />
+          <HabitList
+            habits={habits}
+            onComplete={handleComplete}
+            onDelete={handleDelete}
+            emptyMessage={
+              categoryFilter
+                ? `No habits in the "${categoryFilter}" category yet.`
+                : undefined
+            }
+          />
         )}
       </main>
     </div>
