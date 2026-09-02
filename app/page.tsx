@@ -48,7 +48,7 @@ export default function Home() {
       <main className="flex w-full max-w-xl flex-col gap-6 px-6 py-16">
         <div>
           <h1 className="text-2xl font-semibold">Habit Tracker</h1>
-          <p className="text-sm text-zinc-500">Small daily habits, tracked one day at a time.</p>
+          <p className="text-sm text-zinc-500">Build small daily habits, one day at a time.</p>
         </div>
 
         <HabitForm onCreate={handleCreate} />
