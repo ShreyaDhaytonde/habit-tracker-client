@@ -59,7 +59,7 @@ export default function HabitCard({ habit, onComplete, onDelete }: HabitCardProp
         </button>
         <button
           onClick={() => {
-            if (window.confirm(`Remove "${habit.name}"? This can't be undone.`)) {
+            if (window.confirm(`Delete "${habit.name}"? This can't be undone.`)) {
               onDelete(habit.id);
             }
           }}
