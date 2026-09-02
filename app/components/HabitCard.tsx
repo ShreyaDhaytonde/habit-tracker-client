@@ -44,7 +44,7 @@ export default function HabitCard({ habit, onComplete, onDelete }: HabitCardProp
           </div>
           <span className="text-xs text-zinc-500">
             {goalReached
-              ? "🎉 Goal reached"
+              ? "🎉 Weekly goal reached"
               : `${habit.completed_this_week}/${habit.target_per_week} this week`}
           </span>
         </div>
