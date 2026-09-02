@@ -1,10 +1,14 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import HabitCard from "@/app/components/HabitCard";
 import { makeMockHabit } from "@/test/mock-data";
 
 describe("HabitCard", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it("renders the habit name, category, and streak", () => {
     render(
       <HabitCard
@@ -60,7 +64,8 @@ describe("HabitCard", () => {
     expect(screen.getByRole("button", { name: /done today/i })).toBeDisabled();
   });
 
-  it("calls onDelete with the habit id", async () => {
+  it("calls onDelete with the habit id once the user confirms", async () => {
+    vi.spyOn(window, "confirm").mockReturnValue(true);
     const onDelete = vi.fn();
     render(
       <HabitCard
@@ -70,6 +75,21 @@ describe("HabitCard", () => {
       />
     );
     await userEvent.click(screen.getByRole("button", { name: /delete stretch/i }));
+    expect(window.confirm).toHaveBeenCalledWith(expect.stringContaining("Stretch"));
     expect(onDelete).toHaveBeenCalledWith(3);
+  });
+
+  it("does not call onDelete when the user cancels the confirmation", async () => {
+    vi.spyOn(window, "confirm").mockReturnValue(false);
+    const onDelete = vi.fn();
+    render(
+      <HabitCard
+        habit={makeMockHabit({ id: 3, name: "Stretch" })}
+        onComplete={vi.fn()}
+        onDelete={onDelete}
+      />
+    );
+    await userEvent.click(screen.getByRole("button", { name: /delete stretch/i }));
+    expect(onDelete).not.toHaveBeenCalled();
   });
 });

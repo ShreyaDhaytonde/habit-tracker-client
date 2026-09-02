@@ -52,7 +52,11 @@ export default function HabitCard({ habit, onComplete, onDelete }: HabitCardProp
           {habit.completed_today ? "Done today" : "Mark done"}
         </button>
         <button
-          onClick={() => onDelete(habit.id)}
+          onClick={() => {
+            if (window.confirm(`Remove "${habit.name}"? This can't be undone.`)) {
+              onDelete(habit.id);
+            }
+          }}
           aria-label={`Delete ${habit.name}`}
           className="rounded-full px-3 py-1 text-sm text-zinc-500 hover:text-red-600"
         >
