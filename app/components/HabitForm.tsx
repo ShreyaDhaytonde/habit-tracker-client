@@ -30,7 +30,7 @@ export default function HabitForm({ onCreate }: HabitFormProps) {
     <form onSubmit={handleSubmit} className="flex flex-wrap gap-2">
       <input
         aria-label="New habit name"
-        placeholder="e.g. Drink water"
+        placeholder="e.g. Drink more water"
         value={name}
         onChange={(e) => setName(e.target.value)}
         className="flex-1 rounded-md border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
