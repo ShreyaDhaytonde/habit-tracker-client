@@ -18,6 +18,24 @@ describe("HabitCard", () => {
     expect(screen.getByText(/5 days streak/)).toBeInTheDocument();
   });
 
+  it("shows weekly progress toward the habit's target", () => {
+    render(
+      <HabitCard
+        habit={makeMockHabit({
+          name: "Run",
+          target_per_week: 3,
+          completed_this_week: 2,
+        })}
+        onComplete={vi.fn()}
+        onDelete={vi.fn()}
+      />
+    );
+    expect(screen.getByText("2/3 this week")).toBeInTheDocument();
+    const bar = screen.getByRole("progressbar", { name: /run weekly progress/i });
+    expect(bar).toHaveAttribute("aria-valuenow", "2");
+    expect(bar).toHaveAttribute("aria-valuemax", "3");
+  });
+
   it("calls onComplete with the habit id when marking done", async () => {
     const onComplete = vi.fn();
     render(

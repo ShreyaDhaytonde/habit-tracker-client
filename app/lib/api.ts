@@ -25,10 +25,14 @@ export function listCategories(): Promise<string[]> {
   return request<string[]>("/habits/categories");
 }
 
-export function createHabit(name: string, category: string): Promise<Habit> {
+export function createHabit(
+  name: string,
+  category: string,
+  targetPerWeek: number
+): Promise<Habit> {
   return request<Habit>("/habits", {
     method: "POST",
-    body: JSON.stringify({ name, category }),
+    body: JSON.stringify({ name, category, target_per_week: targetPerWeek }),
   });
 }
 
