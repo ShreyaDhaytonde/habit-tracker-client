@@ -20,7 +20,7 @@ export default function HabitCard({ habit, onComplete, onDelete }: HabitCardProp
         </div>
         <p className="text-sm text-zinc-500">
           {habit.streak === 0
-            ? "Start your streak today"
+            ? "Start your streak today!"
             : `🔥 ${habit.streak} day${habit.streak === 1 ? "" : "s"} streak`}
         </p>
         <div className="mt-1 flex items-center gap-2">
