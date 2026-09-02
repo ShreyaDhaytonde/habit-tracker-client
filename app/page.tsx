@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import HabitForm from "@/app/components/HabitForm";
 import HabitList from "@/app/components/HabitList";
@@ -46,9 +47,17 @@ export default function Home() {
   return (
     <div className="flex flex-1 justify-center bg-zinc-50 dark:bg-black">
       <main className="flex w-full max-w-xl flex-col gap-6 px-6 py-16">
-        <div>
-          <h1 className="text-2xl font-semibold">Habit Tracker</h1>
-          <p className="text-sm text-zinc-500">Build small daily habits, one day at a time.</p>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-semibold">Habit Tracker</h1>
+            <p className="text-sm text-zinc-500">Build small daily habits, one day at a time.</p>
+          </div>
+          <Link
+            href="/stats"
+            className="whitespace-nowrap text-sm text-zinc-500 underline hover:text-zinc-900"
+          >
+            View stats
+          </Link>
         </div>
 
         <HabitForm onCreate={handleCreate} />
