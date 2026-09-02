@@ -22,6 +22,18 @@ describe("HabitCard", () => {
     expect(screen.getByText(/5 days streak/)).toBeInTheDocument();
   });
 
+  it("shows a start-your-streak prompt when there is no streak yet", () => {
+    render(
+      <HabitCard
+        habit={makeMockHabit({ name: "Meditate", streak: 0 })}
+        onComplete={vi.fn()}
+        onDelete={vi.fn()}
+      />
+    );
+    expect(screen.getByText("Start your streak today")).toBeInTheDocument();
+    expect(screen.queryByText(/day.*streak/)).not.toBeInTheDocument();
+  });
+
   it("shows weekly progress toward the habit's target", () => {
     render(
       <HabitCard
