@@ -19,6 +19,29 @@ export default function HabitCard({ habit, onComplete, onDelete }: HabitCardProp
         <p className="text-sm text-zinc-500">
           🔥 {habit.streak} day{habit.streak === 1 ? "" : "s"} streak
         </p>
+        <div className="mt-1 flex items-center gap-2">
+          <div
+            role="progressbar"
+            aria-label={`${habit.name} weekly progress`}
+            aria-valuenow={habit.completed_this_week}
+            aria-valuemin={0}
+            aria-valuemax={habit.target_per_week}
+            className="h-1.5 w-24 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800"
+          >
+            <div
+              className="h-full rounded-full bg-emerald-600"
+              style={{
+                width: `${Math.min(
+                  100,
+                  (habit.completed_this_week / habit.target_per_week) * 100
+                )}%`,
+              }}
+            />
+          </div>
+          <span className="text-xs text-zinc-500">
+            {habit.completed_this_week}/{habit.target_per_week} this week
+          </span>
+        </div>
       </div>
       <div className="flex items-center gap-2">
         <button

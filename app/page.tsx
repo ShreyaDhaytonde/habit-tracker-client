@@ -26,8 +26,8 @@ export default function Home() {
     loadHabits(categoryFilter);
   }, [categoryFilter, loadHabits]);
 
-  async function handleCreate(name: string, category: string) {
-    const habit = await createHabit(name, category);
+  async function handleCreate(name: string, category: string, targetPerWeek: number) {
+    const habit = await createHabit(name, category, targetPerWeek);
     if (!categoryFilter || categoryFilter === habit.category) {
       setHabits((prev) => [...prev, habit]);
     }

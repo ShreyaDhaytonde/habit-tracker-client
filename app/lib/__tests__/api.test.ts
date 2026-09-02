@@ -24,8 +24,13 @@ describe("habits api client", () => {
     );
   });
 
-  it("createHabit posts the name and category as JSON", async () => {
-    const created = makeMockHabit({ id: 9, name: "Journal", category: "Personal" });
+  it("createHabit posts the name, category, and weekly target as JSON", async () => {
+    const created = makeMockHabit({
+      id: 9,
+      name: "Journal",
+      category: "Personal",
+      target_per_week: 5,
+    });
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
       status: 201,
@@ -33,12 +38,16 @@ describe("habits api client", () => {
     });
     vi.stubGlobal("fetch", fetchMock);
 
-    const result = await createHabit("Journal", "Personal");
+    const result = await createHabit("Journal", "Personal", 5);
 
     expect(result).toEqual(created);
     const [, init] = fetchMock.mock.calls[0];
     expect(init.method).toBe("POST");
-    expect(JSON.parse(init.body)).toEqual({ name: "Journal", category: "Personal" });
+    expect(JSON.parse(init.body)).toEqual({
+      name: "Journal",
+      category: "Personal",
+      target_per_week: 5,
+    });
   });
 
   it("listHabits includes the category as a query param when given", async () => {

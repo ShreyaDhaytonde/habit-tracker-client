@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import HabitForm from "@/app/components/HabitForm";
 
 describe("HabitForm", () => {
-  it("submits the trimmed habit name with the default category and clears the input", async () => {
+  it("submits the trimmed habit name with the defaults and clears the input", async () => {
     const onCreate = vi.fn().mockResolvedValue(undefined);
     render(<HabitForm onCreate={onCreate} />);
 
@@ -12,19 +12,20 @@ describe("HabitForm", () => {
     await userEvent.type(input, "  Drink water  ");
     await userEvent.click(screen.getByRole("button", { name: /add habit/i }));
 
-    expect(onCreate).toHaveBeenCalledWith("Drink water", "General");
+    expect(onCreate).toHaveBeenCalledWith("Drink water", "General", 7);
     expect(input).toHaveValue("");
   });
 
-  it("submits the category selected by the user", async () => {
+  it("submits the category and weekly target selected by the user", async () => {
     const onCreate = vi.fn().mockResolvedValue(undefined);
     render(<HabitForm onCreate={onCreate} />);
 
     await userEvent.type(screen.getByLabelText(/new habit name/i), "Run 5k");
     await userEvent.selectOptions(screen.getByLabelText(/habit category/i), "Health");
+    await userEvent.selectOptions(screen.getByLabelText(/times per week/i), "3");
     await userEvent.click(screen.getByRole("button", { name: /add habit/i }));
 
-    expect(onCreate).toHaveBeenCalledWith("Run 5k", "Health");
+    expect(onCreate).toHaveBeenCalledWith("Run 5k", "Health", 3);
   });
 
   it("does not submit an empty or whitespace-only name", async () => {
