@@ -1,13 +1,97 @@
+"use client";
+
+import { useState } from "react";
 import type { Habit } from "@/app/types/HabitTypes";
+import { HABIT_CATEGORIES, WEEKLY_TARGET_OPTIONS } from "@/app/types/HabitTypes";
 
 interface HabitCardProps {
   habit: Habit;
   onComplete: (id: number) => void;
   onDelete: (id: number) => void;
+  onEdit: (id: number, name: string, category: string, targetPerWeek: number) => Promise<void>;
 }
 
-export default function HabitCard({ habit, onComplete, onDelete }: HabitCardProps) {
+export default function HabitCard({ habit, onComplete, onDelete, onEdit }: HabitCardProps) {
+  const [editing, setEditing] = useState(false);
+  const [name, setName] = useState(habit.name);
+  const [category, setCategory] = useState(habit.category);
+  const [targetPerWeek, setTargetPerWeek] = useState(habit.target_per_week);
+  const [saving, setSaving] = useState(false);
+
   const goalReached = habit.completed_this_week >= habit.target_per_week;
+
+  function startEditing() {
+    setName(habit.name);
+    setCategory(habit.category);
+    setTargetPerWeek(habit.target_per_week);
+    setEditing(true);
+  }
+
+  async function handleSave(e: React.FormEvent) {
+    e.preventDefault();
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    setSaving(true);
+    try {
+      await onEdit(habit.id, trimmed, category, targetPerWeek);
+      setEditing(false);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  if (editing) {
+    return (
+      <li className="rounded-lg border border-zinc-200 px-4 py-3 dark:border-zinc-800">
+        <form onSubmit={handleSave} className="flex flex-wrap items-center gap-2">
+          <input
+            aria-label={`Edit name for ${habit.name}`}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="flex-1 rounded-md border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+          />
+          <select
+            aria-label={`Edit category for ${habit.name}`}
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="rounded-md border border-zinc-300 px-2 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+          >
+            {HABIT_CATEGORIES.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+          <select
+            aria-label={`Edit times per week for ${habit.name}`}
+            value={targetPerWeek}
+            onChange={(e) => setTargetPerWeek(Number(e.target.value))}
+            className="rounded-md border border-zinc-300 px-2 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+          >
+            {WEEKLY_TARGET_OPTIONS.map((n) => (
+              <option key={n} value={n}>
+                {n}x / week
+              </option>
+            ))}
+          </select>
+          <button
+            type="submit"
+            disabled={saving || !name.trim()}
+            className="rounded-full bg-foreground px-3 py-1 text-sm font-medium text-background disabled:opacity-50"
+          >
+            Save
+          </button>
+          <button
+            type="button"
+            onClick={() => setEditing(false)}
+            className="rounded-full px-3 py-1 text-sm text-zinc-500"
+          >
+            Cancel
+          </button>
+        </form>
+      </li>
+    );
+  }
 
   return (
     <li className="flex items-center justify-between rounded-lg border border-zinc-200 px-4 py-3 dark:border-zinc-800">
@@ -56,6 +140,13 @@ export default function HabitCard({ habit, onComplete, onDelete }: HabitCardProp
           className="rounded-full px-3 py-1 text-sm font-medium disabled:opacity-50 bg-emerald-600 text-white disabled:bg-emerald-600"
         >
           {habit.completed_today ? "Done today" : "Mark done"}
+        </button>
+        <button
+          onClick={startEditing}
+          aria-label={`Edit ${habit.name}`}
+          className="rounded-full px-3 py-1 text-sm text-zinc-500 hover:text-zinc-900"
+        >
+          Edit
         </button>
         <button
           onClick={() => {

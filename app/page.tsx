@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import HabitForm from "@/app/components/HabitForm";
 import HabitList from "@/app/components/HabitList";
-import { completeHabit, createHabit, deleteHabit, listHabits } from "@/app/lib/api";
+import { completeHabit, createHabit, deleteHabit, listHabits, updateHabit } from "@/app/lib/api";
 import type { Habit } from "@/app/types/HabitTypes";
 import { HABIT_CATEGORIES } from "@/app/types/HabitTypes";
 
@@ -42,6 +42,11 @@ export default function Home() {
   async function handleDelete(id: number) {
     await deleteHabit(id);
     setHabits((prev) => prev.filter((h) => h.id !== id));
+  }
+
+  async function handleEdit(id: number, name: string, category: string, targetPerWeek: number) {
+    const updated = await updateHabit(id, { name, category, target_per_week: targetPerWeek });
+    setHabits((prev) => prev.map((h) => (h.id === id ? updated : h)));
   }
 
   return (
@@ -89,6 +94,7 @@ export default function Home() {
             habits={habits}
             onComplete={handleComplete}
             onDelete={handleDelete}
+            onEdit={handleEdit}
             emptyMessage={
               categoryFilter
                 ? `No habits in the "${categoryFilter}" category yet.`

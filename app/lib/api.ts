@@ -40,6 +40,16 @@ export function createHabit(
   });
 }
 
+export function updateHabit(
+  id: number,
+  updates: Partial<{ name: string; category: string; target_per_week: number }>
+): Promise<Habit> {
+  return request<Habit>(`/habits/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(updates),
+  });
+}
+
 export function completeHabit(id: number): Promise<Habit> {
   return request<Habit>(`/habits/${id}/complete`, { method: "POST" });
 }

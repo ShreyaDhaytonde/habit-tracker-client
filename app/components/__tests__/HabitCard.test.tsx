@@ -15,6 +15,7 @@ describe("HabitCard", () => {
         habit={makeMockHabit({ name: "Meditate", category: "Health", streak: 5 })}
         onComplete={vi.fn()}
         onDelete={vi.fn()}
+        onEdit={vi.fn()}
       />
     );
     expect(screen.getByText("Meditate")).toBeInTheDocument();
@@ -28,6 +29,7 @@ describe("HabitCard", () => {
         habit={makeMockHabit({ name: "Meditate", streak: 0 })}
         onComplete={vi.fn()}
         onDelete={vi.fn()}
+        onEdit={vi.fn()}
       />
     );
     expect(screen.getByText(/start your streak today/i)).toBeInTheDocument();
@@ -44,6 +46,7 @@ describe("HabitCard", () => {
         })}
         onComplete={vi.fn()}
         onDelete={vi.fn()}
+        onEdit={vi.fn()}
       />
     );
     expect(screen.getByText("2/3 this week")).toBeInTheDocument();
@@ -58,6 +61,7 @@ describe("HabitCard", () => {
         habit={makeMockHabit({ name: "Run", target_per_week: 3, completed_this_week: 3 })}
         onComplete={vi.fn()}
         onDelete={vi.fn()}
+        onEdit={vi.fn()}
       />
     );
     expect(screen.getByText(/goal reached/i)).toBeInTheDocument();
@@ -70,6 +74,7 @@ describe("HabitCard", () => {
         habit={makeMockHabit({ name: "Run", target_per_week: 3, completed_this_week: 2 })}
         onComplete={vi.fn()}
         onDelete={vi.fn()}
+        onEdit={vi.fn()}
       />
     );
     expect(screen.queryByText("🎉 Goal reached")).not.toBeInTheDocument();
@@ -82,6 +87,7 @@ describe("HabitCard", () => {
         habit={makeMockHabit({ id: 7, completed_today: false })}
         onComplete={onComplete}
         onDelete={vi.fn()}
+        onEdit={vi.fn()}
       />
     );
     await userEvent.click(screen.getByRole("button", { name: /mark done/i }));
@@ -94,6 +100,7 @@ describe("HabitCard", () => {
         habit={makeMockHabit({ completed_today: true })}
         onComplete={vi.fn()}
         onDelete={vi.fn()}
+        onEdit={vi.fn()}
       />
     );
     expect(screen.getByRole("button", { name: /done today/i })).toBeDisabled();
@@ -107,6 +114,7 @@ describe("HabitCard", () => {
         habit={makeMockHabit({ id: 3, name: "Stretch" })}
         onComplete={vi.fn()}
         onDelete={onDelete}
+        onEdit={vi.fn()}
       />
     );
     await userEvent.click(screen.getByRole("button", { name: /delete stretch/i }));
@@ -122,9 +130,58 @@ describe("HabitCard", () => {
         habit={makeMockHabit({ id: 3, name: "Stretch" })}
         onComplete={vi.fn()}
         onDelete={onDelete}
+        onEdit={vi.fn()}
       />
     );
     await userEvent.click(screen.getByRole("button", { name: /delete stretch/i }));
     expect(onDelete).not.toHaveBeenCalled();
+  });
+
+  it("switches to an edit form when Edit is clicked", async () => {
+    render(
+      <HabitCard
+        habit={makeMockHabit({ name: "Stretch" })}
+        onComplete={vi.fn()}
+        onDelete={vi.fn()}
+        onEdit={vi.fn()}
+      />
+    );
+    await userEvent.click(screen.getByRole("button", { name: /edit stretch/i }));
+    expect(screen.getByLabelText(/edit name for stretch/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /save/i })).toBeInTheDocument();
+  });
+
+  it("calls onEdit with the updated fields on save", async () => {
+    const onEdit = vi.fn().mockResolvedValue(undefined);
+    render(
+      <HabitCard
+        habit={makeMockHabit({ id: 5, name: "Stretch", category: "General", target_per_week: 7 })}
+        onComplete={vi.fn()}
+        onDelete={vi.fn()}
+        onEdit={onEdit}
+      />
+    );
+    await userEvent.click(screen.getByRole("button", { name: /edit stretch/i }));
+    const nameInput = screen.getByLabelText(/edit name for stretch/i);
+    await userEvent.clear(nameInput);
+    await userEvent.type(nameInput, "Stretch daily");
+    await userEvent.click(screen.getByRole("button", { name: /save/i }));
+    expect(onEdit).toHaveBeenCalledWith(5, "Stretch daily", "General", 7);
+  });
+
+  it("returns to the normal view without calling onEdit when cancelled", async () => {
+    const onEdit = vi.fn();
+    render(
+      <HabitCard
+        habit={makeMockHabit({ name: "Stretch" })}
+        onComplete={vi.fn()}
+        onDelete={vi.fn()}
+        onEdit={onEdit}
+      />
+    );
+    await userEvent.click(screen.getByRole("button", { name: /edit stretch/i }));
+    await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
+    expect(onEdit).not.toHaveBeenCalled();
+    expect(screen.getByRole("button", { name: /edit stretch/i })).toBeInTheDocument();
   });
 });
