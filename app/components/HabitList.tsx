@@ -5,6 +5,7 @@ interface HabitListProps {
   habits: Habit[];
   onComplete: (id: number) => void;
   onDelete: (id: number) => void;
+  onEdit: (id: number, name: string, category: string, targetPerWeek: number) => Promise<void>;
   emptyMessage?: string;
 }
 
@@ -12,6 +13,7 @@ export default function HabitList({
   habits,
   onComplete,
   onDelete,
+  onEdit,
   emptyMessage = "No habits yet — add one above to get started.",
 }: HabitListProps) {
   if (habits.length === 0) {
@@ -21,7 +23,13 @@ export default function HabitList({
   return (
     <ul className="flex flex-col gap-2">
       {habits.map((habit) => (
-        <HabitCard key={habit.id} habit={habit} onComplete={onComplete} onDelete={onDelete} />
+        <HabitCard
+          key={habit.id}
+          habit={habit}
+          onComplete={onComplete}
+          onDelete={onDelete}
+          onEdit={onEdit}
+        />
       ))}
     </ul>
   );

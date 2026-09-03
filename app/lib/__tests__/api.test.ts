@@ -6,6 +6,7 @@ import {
   getHabitStats,
   listCategories,
   listHabits,
+  updateHabit,
 } from "@/app/lib/api";
 import { MOCK_HABITS, makeMockHabit, makeMockStats } from "@/test/mock-data";
 
@@ -106,6 +107,24 @@ describe("habits api client", () => {
       expect.stringContaining("/habits/stats"),
       expect.anything()
     );
+  });
+
+  it("updateHabit patches the given fields as JSON", async () => {
+    const updated = makeMockHabit({ id: 6, name: "Journal daily", category: "Personal" });
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => updated,
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await updateHabit(6, { name: "Journal daily", category: "Personal" });
+
+    expect(result).toEqual(updated);
+    const [url, init] = fetchMock.mock.calls[0];
+    expect(url).toContain("/habits/6");
+    expect(init.method).toBe("PATCH");
+    expect(JSON.parse(init.body)).toEqual({ name: "Journal daily", category: "Personal" });
   });
 
   it("completeHabit posts to the complete endpoint", async () => {
