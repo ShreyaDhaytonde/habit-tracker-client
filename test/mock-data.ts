@@ -6,6 +6,8 @@ export function makeMockHabit(overrides: Partial<Habit> = {}): Habit {
     name: "Drink water",
     category: "General",
     target_per_week: 7,
+    notes: null,
+    archived: false,
     completed_this_week: 0,
     streak: 0,
     completed_today: false,

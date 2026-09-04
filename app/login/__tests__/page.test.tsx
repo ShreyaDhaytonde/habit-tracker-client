@@ -19,16 +19,16 @@ describe("LoginPage", () => {
     clearAuthCookie();
   });
 
-  it("renders username and password fields and a sign in button", () => {
+  it("renders name and password fields and a sign in button", () => {
     render(<LoginPage />);
-    expect(screen.getByLabelText("Username")).toBeInTheDocument();
+    expect(screen.getByLabelText("Name")).toBeInTheDocument();
     expect(screen.getByLabelText("Password")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Sign in" })).toBeInTheDocument();
   });
 
   it("shows an error and does not navigate on invalid credentials", async () => {
     render(<LoginPage />);
-    await userEvent.type(screen.getByLabelText("Username"), "wrong");
+    await userEvent.type(screen.getByLabelText("Name"), "wrong");
     await userEvent.type(screen.getByLabelText("Password"), "wrong");
     await userEvent.click(screen.getByRole("button", { name: "Sign in" }));
 
@@ -39,7 +39,7 @@ describe("LoginPage", () => {
 
   it("sets the auth cookie and navigates home on valid credentials", async () => {
     render(<LoginPage />);
-    await userEvent.type(screen.getByLabelText("Username"), "Shreya");
+    await userEvent.type(screen.getByLabelText("Name"), "Shreya");
     await userEvent.type(screen.getByLabelText("Password"), "Shreya#23");
     await userEvent.click(screen.getByRole("button", { name: "Sign in" }));
 

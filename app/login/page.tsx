@@ -3,18 +3,18 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-const VALID_USERNAME = "Shreya";
+const VALID_NAME = "Shreya";
 const VALID_PASSWORD = "Shreya#23";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [username, setUsername] = useState("");
+  const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (username === VALID_USERNAME && password === VALID_PASSWORD) {
+    if (name === VALID_NAME && password === VALID_PASSWORD) {
       document.cookie = "habit_auth=1; path=/; max-age=" + 60 * 60 * 24 * 7;
       router.push("/");
     } else {
@@ -34,16 +34,16 @@ export default function LoginPage() {
         </div>
 
         <div className="flex flex-col gap-1">
-          <label htmlFor="username" className="text-sm text-zinc-500">
-            Username
+          <label htmlFor="name" className="text-sm text-zinc-500">
+            Name
           </label>
           <input
-            id="username"
-            name="username"
+            id="name"
+            name="name"
             type="text"
-            autoComplete="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            autoComplete="name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             className="rounded-md border border-zinc-300 px-2 py-1 text-sm dark:border-zinc-700 dark:bg-zinc-900"
           />
         </div>

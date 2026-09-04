@@ -4,13 +4,19 @@ import { useState } from "react";
 import { HABIT_CATEGORIES, WEEKLY_TARGET_OPTIONS } from "@/app/types/HabitTypes";
 
 interface HabitFormProps {
-  onCreate: (name: string, category: string, targetPerWeek: number) => Promise<void>;
+  onCreate: (
+    name: string,
+    category: string,
+    targetPerWeek: number,
+    notes: string
+  ) => Promise<void>;
 }
 
 export default function HabitForm({ onCreate }: HabitFormProps) {
   const [name, setName] = useState("");
   const [category, setCategory] = useState<string>(HABIT_CATEGORIES[0]);
   const [targetPerWeek, setTargetPerWeek] = useState<number>(7);
+  const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -19,8 +25,9 @@ export default function HabitForm({ onCreate }: HabitFormProps) {
     if (!trimmed) return;
     setSubmitting(true);
     try {
-      await onCreate(trimmed, category, targetPerWeek);
+      await onCreate(trimmed, category, targetPerWeek, notes.trim());
       setName("");
+      setNotes("");
     } finally {
       setSubmitting(false);
     }
@@ -59,6 +66,13 @@ export default function HabitForm({ onCreate }: HabitFormProps) {
           </option>
         ))}
       </select>
+      <input
+        aria-label="Notes (optional)"
+        placeholder="Notes (optional)"
+        value={notes}
+        onChange={(e) => setNotes(e.target.value)}
+        className="flex-1 rounded-md border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+      />
       <button
         type="submit"
         disabled={submitting || !name.trim()}

@@ -8,14 +8,28 @@ interface HabitCardProps {
   habit: Habit;
   onComplete: (id: number) => void;
   onDelete: (id: number) => void;
-  onEdit: (id: number, name: string, category: string, targetPerWeek: number) => Promise<void>;
+  onEdit: (
+    id: number,
+    name: string,
+    category: string,
+    targetPerWeek: number,
+    notes: string
+  ) => Promise<void>;
+  onArchiveToggle: (id: number, archived: boolean) => void;
 }
 
-export default function HabitCard({ habit, onComplete, onDelete, onEdit }: HabitCardProps) {
+export default function HabitCard({
+  habit,
+  onComplete,
+  onDelete,
+  onEdit,
+  onArchiveToggle,
+}: HabitCardProps) {
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(habit.name);
   const [category, setCategory] = useState(habit.category);
   const [targetPerWeek, setTargetPerWeek] = useState(habit.target_per_week);
+  const [notes, setNotes] = useState(habit.notes ?? "");
   const [saving, setSaving] = useState(false);
 
   const goalReached = habit.completed_this_week >= habit.target_per_week;
@@ -24,6 +38,7 @@ export default function HabitCard({ habit, onComplete, onDelete, onEdit }: Habit
     setName(habit.name);
     setCategory(habit.category);
     setTargetPerWeek(habit.target_per_week);
+    setNotes(habit.notes ?? "");
     setEditing(true);
   }
 
@@ -33,7 +48,7 @@ export default function HabitCard({ habit, onComplete, onDelete, onEdit }: Habit
     if (!trimmed) return;
     setSaving(true);
     try {
-      await onEdit(habit.id, trimmed, category, targetPerWeek);
+      await onEdit(habit.id, trimmed, category, targetPerWeek, notes.trim());
       setEditing(false);
     } finally {
       setSaving(false);
@@ -74,6 +89,13 @@ export default function HabitCard({ habit, onComplete, onDelete, onEdit }: Habit
               </option>
             ))}
           </select>
+          <input
+            aria-label={`Edit notes for ${habit.name}`}
+            placeholder="Notes (optional)"
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            className="w-full flex-1 rounded-md border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+          />
           <button
             type="submit"
             disabled={saving || !name.trim()}
@@ -132,11 +154,12 @@ export default function HabitCard({ habit, onComplete, onDelete, onEdit }: Habit
               : `${habit.completed_this_week}/${habit.target_per_week} this week`}
           </span>
         </div>
+        {habit.notes && <p className="mt-1 text-xs text-zinc-500 italic">{habit.notes}</p>}
       </div>
       <div className="flex items-center gap-2">
         <button
           onClick={() => onComplete(habit.id)}
-          disabled={habit.completed_today}
+          disabled={habit.completed_today || habit.archived}
           className="rounded-full px-3 py-1 text-sm font-medium disabled:opacity-50 bg-emerald-600 text-white disabled:bg-emerald-600"
         >
           {habit.completed_today ? "Done today" : "Mark done"}
@@ -147,6 +170,13 @@ export default function HabitCard({ habit, onComplete, onDelete, onEdit }: Habit
           className="rounded-full px-3 py-1 text-sm text-zinc-500 hover:text-zinc-900"
         >
           Edit
+        </button>
+        <button
+          onClick={() => onArchiveToggle(habit.id, !habit.archived)}
+          aria-label={`${habit.archived ? "Unarchive" : "Archive"} ${habit.name}`}
+          className="rounded-full px-3 py-1 text-sm text-zinc-500 hover:text-zinc-900"
+        >
+          {habit.archived ? "Unarchive" : "Archive"}
         </button>
         <button
           onClick={() => {

@@ -16,6 +16,7 @@ describe("HabitCard", () => {
         onComplete={vi.fn()}
         onDelete={vi.fn()}
         onEdit={vi.fn()}
+        onArchiveToggle={vi.fn()}
       />
     );
     expect(screen.getByText("Meditate")).toBeInTheDocument();
@@ -30,6 +31,7 @@ describe("HabitCard", () => {
         onComplete={vi.fn()}
         onDelete={vi.fn()}
         onEdit={vi.fn()}
+        onArchiveToggle={vi.fn()}
       />
     );
     expect(screen.getByText(/start your streak today/i)).toBeInTheDocument();
@@ -47,6 +49,7 @@ describe("HabitCard", () => {
         onComplete={vi.fn()}
         onDelete={vi.fn()}
         onEdit={vi.fn()}
+        onArchiveToggle={vi.fn()}
       />
     );
     expect(screen.getByText("2/3 this week")).toBeInTheDocument();
@@ -62,6 +65,7 @@ describe("HabitCard", () => {
         onComplete={vi.fn()}
         onDelete={vi.fn()}
         onEdit={vi.fn()}
+        onArchiveToggle={vi.fn()}
       />
     );
     expect(screen.getByText(/goal reached/i)).toBeInTheDocument();
@@ -75,6 +79,7 @@ describe("HabitCard", () => {
         onComplete={vi.fn()}
         onDelete={vi.fn()}
         onEdit={vi.fn()}
+        onArchiveToggle={vi.fn()}
       />
     );
     expect(screen.queryByText("🎉 Goal reached")).not.toBeInTheDocument();
@@ -88,6 +93,7 @@ describe("HabitCard", () => {
         onComplete={onComplete}
         onDelete={vi.fn()}
         onEdit={vi.fn()}
+        onArchiveToggle={vi.fn()}
       />
     );
     await userEvent.click(screen.getByRole("button", { name: /mark done/i }));
@@ -101,6 +107,7 @@ describe("HabitCard", () => {
         onComplete={vi.fn()}
         onDelete={vi.fn()}
         onEdit={vi.fn()}
+        onArchiveToggle={vi.fn()}
       />
     );
     expect(screen.getByRole("button", { name: /done today/i })).toBeDisabled();
@@ -115,6 +122,7 @@ describe("HabitCard", () => {
         onComplete={vi.fn()}
         onDelete={onDelete}
         onEdit={vi.fn()}
+        onArchiveToggle={vi.fn()}
       />
     );
     await userEvent.click(screen.getByRole("button", { name: /delete stretch/i }));
@@ -131,6 +139,7 @@ describe("HabitCard", () => {
         onComplete={vi.fn()}
         onDelete={onDelete}
         onEdit={vi.fn()}
+        onArchiveToggle={vi.fn()}
       />
     );
     await userEvent.click(screen.getByRole("button", { name: /delete stretch/i }));
@@ -144,6 +153,7 @@ describe("HabitCard", () => {
         onComplete={vi.fn()}
         onDelete={vi.fn()}
         onEdit={vi.fn()}
+        onArchiveToggle={vi.fn()}
       />
     );
     await userEvent.click(screen.getByRole("button", { name: /edit stretch/i }));
@@ -159,6 +169,7 @@ describe("HabitCard", () => {
         onComplete={vi.fn()}
         onDelete={vi.fn()}
         onEdit={onEdit}
+        onArchiveToggle={vi.fn()}
       />
     );
     await userEvent.click(screen.getByRole("button", { name: /edit stretch/i }));
@@ -166,7 +177,7 @@ describe("HabitCard", () => {
     await userEvent.clear(nameInput);
     await userEvent.type(nameInput, "Stretch daily");
     await userEvent.click(screen.getByRole("button", { name: /save/i }));
-    expect(onEdit).toHaveBeenCalledWith(5, "Stretch daily", "General", 7);
+    expect(onEdit).toHaveBeenCalledWith(5, "Stretch daily", "General", 7, "");
   });
 
   it("returns to the normal view without calling onEdit when cancelled", async () => {
@@ -177,6 +188,7 @@ describe("HabitCard", () => {
         onComplete={vi.fn()}
         onDelete={vi.fn()}
         onEdit={onEdit}
+        onArchiveToggle={vi.fn()}
       />
     );
     await userEvent.click(screen.getByRole("button", { name: /edit stretch/i }));

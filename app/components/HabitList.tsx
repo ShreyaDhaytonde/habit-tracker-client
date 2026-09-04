@@ -5,7 +5,14 @@ interface HabitListProps {
   habits: Habit[];
   onComplete: (id: number) => void;
   onDelete: (id: number) => void;
-  onEdit: (id: number, name: string, category: string, targetPerWeek: number) => Promise<void>;
+  onEdit: (
+    id: number,
+    name: string,
+    category: string,
+    targetPerWeek: number,
+    notes: string
+  ) => Promise<void>;
+  onArchiveToggle: (id: number, archived: boolean) => void;
   emptyMessage?: string;
 }
 
@@ -14,6 +21,7 @@ export default function HabitList({
   onComplete,
   onDelete,
   onEdit,
+  onArchiveToggle,
   emptyMessage = "No habits yet — add one above to get started.",
 }: HabitListProps) {
   if (habits.length === 0) {
@@ -29,6 +37,7 @@ export default function HabitList({
           onComplete={onComplete}
           onDelete={onDelete}
           onEdit={onEdit}
+          onArchiveToggle={onArchiveToggle}
         />
       ))}
     </ul>

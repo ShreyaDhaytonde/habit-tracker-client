@@ -3,6 +3,8 @@ export interface Habit {
   name: string;
   category: string;
   target_per_week: number;
+  notes: string | null;
+  archived: boolean;
   completed_this_week: number;
   streak: number;
   completed_today: boolean;

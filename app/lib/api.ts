@@ -16,8 +16,11 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return res.json() as Promise<T>;
 }
 
-export function listHabits(category?: string): Promise<Habit[]> {
-  const query = category ? `?category=${encodeURIComponent(category)}` : "";
+export function listHabits(category?: string, includeArchived = false): Promise<Habit[]> {
+  const params = new URLSearchParams();
+  if (category) params.set("category", category);
+  if (includeArchived) params.set("include_archived", "true");
+  const query = params.toString() ? `?${params.toString()}` : "";
   return request<Habit[]>(`/habits${query}`);
 }
 
@@ -32,17 +35,24 @@ export function getHabitStats(): Promise<HabitStats> {
 export function createHabit(
   name: string,
   category: string,
-  targetPerWeek: number
+  targetPerWeek: number,
+  notes?: string
 ): Promise<Habit> {
   return request<Habit>("/habits", {
     method: "POST",
-    body: JSON.stringify({ name, category, target_per_week: targetPerWeek }),
+    body: JSON.stringify({ name, category, target_per_week: targetPerWeek, notes }),
   });
 }
 
 export function updateHabit(
   id: number,
-  updates: Partial<{ name: string; category: string; target_per_week: number }>
+  updates: Partial<{
+    name: string;
+    category: string;
+    target_per_week: number;
+    notes: string;
+    archived: boolean;
+  }>
 ): Promise<Habit> {
   return request<Habit>(`/habits/${id}`, {
     method: "PATCH",

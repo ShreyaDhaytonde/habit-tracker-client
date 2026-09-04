@@ -12,7 +12,7 @@ describe("HabitForm", () => {
     await userEvent.type(input, "  Drink water  ");
     await userEvent.click(screen.getByRole("button", { name: /add habit/i }));
 
-    expect(onCreate).toHaveBeenCalledWith("Drink water", "General", 7);
+    expect(onCreate).toHaveBeenCalledWith("Drink water", "General", 7, "");
     expect(input).toHaveValue("");
   });
 
@@ -25,7 +25,7 @@ describe("HabitForm", () => {
     await userEvent.selectOptions(screen.getByLabelText(/times per week/i), "3");
     await userEvent.click(screen.getByRole("button", { name: /add habit/i }));
 
-    expect(onCreate).toHaveBeenCalledWith("Run 5k", "Health", 3);
+    expect(onCreate).toHaveBeenCalledWith("Run 5k", "Health", 3, "");
   });
 
   it("does not submit an empty or whitespace-only name", async () => {
