@@ -123,6 +123,15 @@ export default function HabitCard({
           <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
             {habit.category}
           </span>
+          {habit.at_risk && (
+            <span
+              role="status"
+              aria-label={`${habit.name} is at risk of missing its weekly goal`}
+              className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-900/40 dark:text-amber-400"
+            >
+              ⏰ Due today
+            </span>
+          )}
         </div>
         <p className="text-sm text-zinc-500">
           {habit.streak === 0

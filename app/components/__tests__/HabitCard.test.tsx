@@ -24,6 +24,32 @@ describe("HabitCard", () => {
     expect(screen.getByText(/5 days streak/)).toBeInTheDocument();
   });
 
+  it("shows a due-today badge when the habit is at risk", () => {
+    render(
+      <HabitCard
+        habit={makeMockHabit({ name: "Meditate", at_risk: true })}
+        onComplete={vi.fn()}
+        onDelete={vi.fn()}
+        onEdit={vi.fn()}
+        onArchiveToggle={vi.fn()}
+      />
+    );
+    expect(screen.getByText(/due today/i)).toBeInTheDocument();
+  });
+
+  it("does not show the due-today badge when the habit is not at risk", () => {
+    render(
+      <HabitCard
+        habit={makeMockHabit({ name: "Meditate", at_risk: false })}
+        onComplete={vi.fn()}
+        onDelete={vi.fn()}
+        onEdit={vi.fn()}
+        onArchiveToggle={vi.fn()}
+      />
+    );
+    expect(screen.queryByText(/due today/i)).not.toBeInTheDocument();
+  });
+
   it("shows a start-your-streak prompt when there is no streak yet", () => {
     render(
       <HabitCard

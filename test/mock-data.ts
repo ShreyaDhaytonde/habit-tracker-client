@@ -12,6 +12,7 @@ export function makeMockHabit(overrides: Partial<Habit> = {}): Habit {
     streak: 0,
     completed_today: false,
     completed_days: [],
+    at_risk: false,
     ...overrides,
   };
 }

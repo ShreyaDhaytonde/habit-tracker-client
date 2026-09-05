@@ -9,6 +9,7 @@ export interface Habit {
   streak: number;
   completed_today: boolean;
   completed_days: string[];
+  at_risk: boolean;
 }
 
 export interface HabitStats {
