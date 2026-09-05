@@ -7,6 +7,7 @@ import HabitList from "@/app/components/HabitList";
 import LogoutButton from "@/app/components/LogoutButton";
 import ThemeToggle from "@/app/components/ThemeToggle";
 import { completeHabit, createHabit, deleteHabit, listHabits, updateHabit } from "@/app/lib/api";
+import { downloadFile, habitsToCsv, habitsToJson } from "@/app/lib/export";
 import type { Habit } from "@/app/types/HabitTypes";
 import { HABIT_CATEGORIES } from "@/app/types/HabitTypes";
 
@@ -72,6 +73,14 @@ export default function Home() {
     }
   }
 
+  function handleExportJson() {
+    downloadFile(habitsToJson(habits), "habits.json", "application/json");
+  }
+
+  function handleExportCsv() {
+    downloadFile(habitsToCsv(habits), "habits.csv", "text/csv");
+  }
+
   return (
     <div className="flex flex-1 justify-center bg-zinc-50 dark:bg-black">
       <main className="flex w-full max-w-xl flex-col gap-6 px-6 py-16">
@@ -122,6 +131,22 @@ export default function Home() {
             />
             Show archived
           </label>
+          <div className="ml-auto flex items-center gap-2">
+            <button
+              onClick={handleExportJson}
+              disabled={habits.length === 0}
+              className="text-sm text-zinc-500 underline hover:text-zinc-900 disabled:opacity-50 disabled:no-underline"
+            >
+              Export JSON
+            </button>
+            <button
+              onClick={handleExportCsv}
+              disabled={habits.length === 0}
+              className="text-sm text-zinc-500 underline hover:text-zinc-900 disabled:opacity-50 disabled:no-underline"
+            >
+              Export CSV
+            </button>
+          </div>
         </div>
 
         {loading && <p className="text-sm text-zinc-500">Loading habits…</p>}
