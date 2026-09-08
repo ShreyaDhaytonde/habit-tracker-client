@@ -10,6 +10,7 @@ import { completeHabit, createHabit, deleteHabit, listHabits, updateHabit } from
 import { downloadFile, habitsToCsv, habitsToJson } from "@/app/lib/export";
 import { filterHabitsByName, sortHabits } from "@/app/lib/filterSort";
 import type { HabitSortKey } from "@/app/lib/filterSort";
+import { loadViewPrefs, saveViewPrefs } from "@/app/lib/viewPrefs";
 import type { Habit } from "@/app/types/HabitTypes";
 import { HABIT_CATEGORIES } from "@/app/types/HabitTypes";
 
@@ -29,6 +30,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [completingAll, setCompletingAll] = useState(false);
+  const [prefsRestored, setPrefsRestored] = useState(false);
 
   const loadHabits = useCallback((category: string, includeArchived: boolean) => {
     setLoading(true);
@@ -40,8 +42,23 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    const stored = loadViewPrefs();
+    if (stored.categoryFilter !== undefined) setCategoryFilter(stored.categoryFilter);
+    if (stored.showArchived !== undefined) setShowArchived(stored.showArchived);
+    if (stored.searchQuery !== undefined) setSearchQuery(stored.searchQuery);
+    if (stored.sortBy !== undefined) setSortBy(stored.sortBy);
+    setPrefsRestored(true);
+  }, []);
+
+  useEffect(() => {
+    if (!prefsRestored) return;
+    saveViewPrefs({ categoryFilter, showArchived, searchQuery, sortBy });
+  }, [prefsRestored, categoryFilter, showArchived, searchQuery, sortBy]);
+
+  useEffect(() => {
+    if (!prefsRestored) return;
     loadHabits(categoryFilter, showArchived);
-  }, [categoryFilter, showArchived, loadHabits]);
+  }, [prefsRestored, categoryFilter, showArchived, loadHabits]);
 
   async function handleCreate(name: string, category: string, targetPerWeek: number, notes: string) {
     const habit = await createHabit(name, category, targetPerWeek, notes);
