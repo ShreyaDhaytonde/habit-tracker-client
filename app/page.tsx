@@ -8,15 +8,27 @@ import LogoutButton from "@/app/components/LogoutButton";
 import ThemeToggle from "@/app/components/ThemeToggle";
 import { completeHabit, createHabit, deleteHabit, listHabits, updateHabit } from "@/app/lib/api";
 import { downloadFile, habitsToCsv, habitsToJson } from "@/app/lib/export";
+import { filterHabitsByName, sortHabits } from "@/app/lib/filterSort";
+import type { HabitSortKey } from "@/app/lib/filterSort";
 import type { Habit } from "@/app/types/HabitTypes";
 import { HABIT_CATEGORIES } from "@/app/types/HabitTypes";
+
+const SORT_OPTIONS: { value: HabitSortKey; label: string }[] = [
+  { value: "name", label: "Name (A-Z)" },
+  { value: "streak", label: "Streak (highest first)" },
+  { value: "category", label: "Category" },
+  { value: "target_per_week", label: "Weekly target (highest first)" },
+];
 
 export default function Home() {
   const [habits, setHabits] = useState<Habit[]>([]);
   const [categoryFilter, setCategoryFilter] = useState<string>("");
   const [showArchived, setShowArchived] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState<HabitSortKey>("name");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [completingAll, setCompletingAll] = useState(false);
 
   const loadHabits = useCallback((category: string, includeArchived: boolean) => {
     setLoading(true);
@@ -81,6 +93,20 @@ export default function Home() {
     downloadFile(habitsToCsv(habits), "habits.csv", "text/csv");
   }
 
+  const visibleHabits = sortHabits(filterHabitsByName(habits, searchQuery), sortBy);
+  const pendingToday = visibleHabits.filter((h) => !h.completed_today && !h.archived);
+
+  async function handleCompleteAll() {
+    setCompletingAll(true);
+    try {
+      const updates = await Promise.all(pendingToday.map((h) => completeHabit(h.id)));
+      const updatesById = new Map(updates.map((h) => [h.id, h]));
+      setHabits((prev) => prev.map((h) => updatesById.get(h.id) ?? h));
+    } finally {
+      setCompletingAll(false);
+    }
+  }
+
   return (
     <div className="flex flex-1 justify-center bg-zinc-50 dark:bg-black">
       <main className="flex w-full max-w-xl flex-col gap-6 px-6 py-16">
@@ -102,6 +128,36 @@ export default function Home() {
         </div>
 
         <HabitForm onCreate={handleCreate} />
+
+        <div className="flex items-center gap-2">
+          <label htmlFor="habit-search" className="sr-only">
+            Search habits by name
+          </label>
+          <input
+            id="habit-search"
+            type="search"
+            placeholder="Search habits by name…"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="flex-1 rounded-md border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+          />
+          <label htmlFor="habit-sort" className="text-sm text-zinc-500">
+            Sort by
+          </label>
+          <select
+            id="habit-sort"
+            aria-label="Sort habits by"
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as HabitSortKey)}
+            className="rounded-md border border-zinc-300 px-2 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+          >
+            {SORT_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </div>
 
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
@@ -133,6 +189,13 @@ export default function Home() {
           </label>
           <div className="ml-auto flex items-center gap-2">
             <button
+              onClick={handleCompleteAll}
+              disabled={completingAll || pendingToday.length === 0}
+              className="rounded-full bg-emerald-600 px-3 py-1 text-sm font-medium text-white disabled:opacity-50"
+            >
+              {completingAll ? "Completing…" : `Complete all for today (${pendingToday.length})`}
+            </button>
+            <button
               onClick={handleExportJson}
               disabled={habits.length === 0}
               className="text-sm text-zinc-500 underline hover:text-zinc-900 disabled:opacity-50 disabled:no-underline"
@@ -153,15 +216,17 @@ export default function Home() {
         {error && <p className="text-sm text-red-600">{error}</p>}
         {!loading && !error && (
           <HabitList
-            habits={habits}
+            habits={visibleHabits}
             onComplete={handleComplete}
             onDelete={handleDelete}
             onEdit={handleEdit}
             onArchiveToggle={handleArchiveToggle}
             emptyMessage={
-              categoryFilter
-                ? `No habits in the "${categoryFilter}" category yet.`
-                : undefined
+              searchQuery
+                ? `No habits match "${searchQuery}".`
+                : categoryFilter
+                  ? `No habits in the "${categoryFilter}" category yet.`
+                  : undefined
             }
           />
         )}
