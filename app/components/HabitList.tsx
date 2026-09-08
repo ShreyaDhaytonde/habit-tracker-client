@@ -25,11 +25,15 @@ export default function HabitList({
   emptyMessage = "No habits yet — add one above to get started.",
 }: HabitListProps) {
   if (habits.length === 0) {
-    return <p className="text-sm text-zinc-500">{emptyMessage}</p>;
+    return (
+      <p className="rounded-xl border border-dashed border-zinc-300 px-4 py-8 text-center text-sm text-zinc-500 dark:border-zinc-700">
+        {emptyMessage}
+      </p>
+    );
   }
 
   return (
-    <ul className="flex flex-col gap-2">
+    <ul className="flex flex-col gap-3">
       {habits.map((habit) => (
         <HabitCard
           key={habit.id}

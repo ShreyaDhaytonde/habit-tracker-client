@@ -6,9 +6,9 @@ interface StatCardProps {
 
 export default function StatCard({ label, value, hint }: StatCardProps) {
   return (
-    <div className="rounded-lg border border-zinc-200 px-4 py-3 dark:border-zinc-800">
-      <p className="text-xs uppercase tracking-wide text-zinc-500">{label}</p>
-      <p className="mt-1 text-2xl font-semibold">{value}</p>
+    <div className="rounded-xl border border-zinc-200 bg-white px-4 py-3 shadow-sm transition-shadow hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900/40">
+      <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">{label}</p>
+      <p className="mt-1 text-2xl font-semibold text-emerald-600 dark:text-emerald-400">{value}</p>
       {hint && <p className="text-xs text-zinc-500">{hint}</p>}
     </div>
   );

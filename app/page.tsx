@@ -107,19 +107,23 @@ export default function Home() {
     }
   }
 
+  const controlInputClasses =
+    "rounded-lg border border-zinc-300 px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 dark:border-zinc-700 dark:bg-zinc-900";
+  const secondaryButtonClasses =
+    "rounded-full border border-zinc-200 px-3 py-1 text-sm text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900 disabled:opacity-40 disabled:hover:bg-transparent dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-zinc-100";
+
   return (
-    <div className="flex flex-1 justify-center bg-zinc-50 dark:bg-black">
+    <div className="flex flex-1 justify-center bg-gradient-to-b from-zinc-50 to-white dark:from-black dark:to-zinc-950">
       <main className="flex w-full max-w-xl flex-col gap-6 px-6 py-16">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-semibold">Habit Tracker</h1>
+            <h1 className="bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-2xl font-bold text-transparent dark:from-emerald-400 dark:to-blue-400">
+              Habit Tracker
+            </h1>
             <p className="text-sm text-zinc-500">Build small daily habits, one day at a time.</p>
           </div>
           <div className="flex items-center gap-1">
-            <Link
-              href="/stats"
-              className="whitespace-nowrap text-sm text-zinc-500 underline hover:text-zinc-900"
-            >
+            <Link href="/stats" className={secondaryButtonClasses}>
               View stats
             </Link>
             <ThemeToggle />
@@ -139,7 +143,7 @@ export default function Home() {
             placeholder="Search habits by name…"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="flex-1 rounded-md border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+            className={`flex-1 ${controlInputClasses}`}
           />
           <label htmlFor="habit-sort" className="text-sm text-zinc-500">
             Sort by
@@ -149,7 +153,7 @@ export default function Home() {
             aria-label="Sort habits by"
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as HabitSortKey)}
-            className="rounded-md border border-zinc-300 px-2 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+            className={controlInputClasses}
           >
             {SORT_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -159,7 +163,7 @@ export default function Home() {
           </select>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-4">
           <div className="flex items-center gap-2">
             <label htmlFor="category-filter" className="text-sm text-zinc-500">
               Filter by category
@@ -169,7 +173,7 @@ export default function Home() {
               aria-label="Filter by category"
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              className="rounded-md border border-zinc-300 px-2 py-1 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+              className={controlInputClasses}
             >
               <option value="">All</option>
               {HABIT_CATEGORIES.map((c) => (
@@ -179,11 +183,12 @@ export default function Home() {
               ))}
             </select>
           </div>
-          <label className="flex items-center gap-1 text-sm text-zinc-500">
+          <label className="flex items-center gap-1.5 text-sm text-zinc-500">
             <input
               type="checkbox"
               checked={showArchived}
               onChange={(e) => setShowArchived(e.target.checked)}
+              className="accent-emerald-600"
             />
             Show archived
           </label>
@@ -191,21 +196,21 @@ export default function Home() {
             <button
               onClick={handleCompleteAll}
               disabled={completingAll || pendingToday.length === 0}
-              className="rounded-full bg-emerald-600 px-3 py-1 text-sm font-medium text-white disabled:opacity-50"
+              className="rounded-full bg-emerald-600 px-3 py-1 text-sm font-medium text-white shadow-sm transition-colors hover:bg-emerald-700 disabled:opacity-50 disabled:hover:bg-emerald-600"
             >
               {completingAll ? "Completing…" : `Complete all for today (${pendingToday.length})`}
             </button>
             <button
               onClick={handleExportJson}
               disabled={habits.length === 0}
-              className="text-sm text-zinc-500 underline hover:text-zinc-900 disabled:opacity-50 disabled:no-underline"
+              className={secondaryButtonClasses}
             >
               Export JSON
             </button>
             <button
               onClick={handleExportCsv}
               disabled={habits.length === 0}
-              className="text-sm text-zinc-500 underline hover:text-zinc-900 disabled:opacity-50 disabled:no-underline"
+              className={secondaryButtonClasses}
             >
               Export CSV
             </button>

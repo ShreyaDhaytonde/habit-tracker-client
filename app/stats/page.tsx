@@ -21,11 +21,13 @@ export default function Stats() {
   }, []);
 
   return (
-    <div className="flex flex-1 justify-center bg-zinc-50 dark:bg-black">
+    <div className="flex flex-1 justify-center bg-gradient-to-b from-zinc-50 to-white dark:from-black dark:to-zinc-950">
       <main className="flex w-full max-w-xl flex-col gap-6 px-6 py-16">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-semibold">Your stats</h1>
+            <h1 className="bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-2xl font-bold text-transparent dark:from-emerald-400 dark:to-blue-400">
+              Your stats
+            </h1>
             <p className="text-sm text-zinc-500">How your habits are tracking overall.</p>
           </div>
           <div className="flex items-center gap-1">
@@ -34,8 +36,11 @@ export default function Stats() {
           </div>
         </div>
 
-        <Link href="/" className="text-sm text-zinc-500 underline hover:text-zinc-900">
-          Back to habits
+        <Link
+          href="/"
+          className="w-fit rounded-full border border-zinc-200 px-3 py-1 text-sm text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+        >
+          ← Back to habits
         </Link>
 
         {loading && <p className="text-sm text-zinc-500">Loading stats…</p>}

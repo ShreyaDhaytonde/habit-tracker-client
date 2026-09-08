@@ -1,4 +1,5 @@
 import StatCard from "@/app/components/StatCard";
+import { getCategoryBadgeClasses } from "@/app/lib/categoryColors";
 import type { HabitStats } from "@/app/types/HabitTypes";
 
 interface StatsSummaryProps {
@@ -34,12 +35,16 @@ export default function StatsSummary({ stats }: StatsSummaryProps) {
         <StatCard label="This week" value={`${stats.weekly_completion_rate}%`} hint="of target" />
       </div>
 
-      <div>
+      <div className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/40">
         <h2 className="text-sm font-medium">Habits by category</h2>
-        <ul className="mt-2 flex flex-col gap-1">
+        <ul className="mt-2 flex flex-col gap-1.5">
           {categories.map(([category, count]) => (
-            <li key={category} className="flex justify-between text-sm">
-              <span className="text-zinc-600 dark:text-zinc-300">{category}</span>
+            <li key={category} className="flex items-center justify-between text-sm">
+              <span
+                className={`rounded-full px-2 py-0.5 text-xs font-medium ${getCategoryBadgeClasses(category)}`}
+              >
+                {category}
+              </span>
               <span className="text-zinc-500">{count}</span>
             </li>
           ))}

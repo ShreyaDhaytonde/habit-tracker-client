@@ -33,53 +33,58 @@ export default function HabitForm({ onCreate }: HabitFormProps) {
     }
   }
 
+  const inputClasses =
+    "rounded-lg border border-zinc-300 px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 dark:border-zinc-700 dark:bg-zinc-900";
+
   return (
-    <form onSubmit={handleSubmit} className="flex flex-wrap gap-2">
-      <input
-        aria-label="New habit name"
-        placeholder="e.g. Drink more water"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        className="flex-1 rounded-md border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
-      />
-      <select
-        aria-label="Habit category"
-        value={category}
-        onChange={(e) => setCategory(e.target.value)}
-        className="rounded-md border border-zinc-300 px-2 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
-      >
-        {HABIT_CATEGORIES.map((c) => (
-          <option key={c} value={c}>
-            {c}
-          </option>
-        ))}
-      </select>
-      <select
-        aria-label="Times per week"
-        value={targetPerWeek}
-        onChange={(e) => setTargetPerWeek(Number(e.target.value))}
-        className="rounded-md border border-zinc-300 px-2 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
-      >
-        {WEEKLY_TARGET_OPTIONS.map((n) => (
-          <option key={n} value={n}>
-            {n}x / week
-          </option>
-        ))}
-      </select>
-      <input
-        aria-label="Notes (optional)"
-        placeholder="Notes (optional)"
-        value={notes}
-        onChange={(e) => setNotes(e.target.value)}
-        className="flex-1 rounded-md border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
-      />
-      <button
-        type="submit"
-        disabled={submitting || !name.trim()}
-        className="rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background disabled:opacity-50"
-      >
-        Add habit
-      </button>
-    </form>
+    <div className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/40">
+      <form onSubmit={handleSubmit} className="flex flex-wrap gap-2">
+        <input
+          aria-label="New habit name"
+          placeholder="e.g. Drink more water"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className={`flex-1 ${inputClasses}`}
+        />
+        <select
+          aria-label="Habit category"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          className={inputClasses}
+        >
+          {HABIT_CATEGORIES.map((c) => (
+            <option key={c} value={c}>
+              {c}
+            </option>
+          ))}
+        </select>
+        <select
+          aria-label="Times per week"
+          value={targetPerWeek}
+          onChange={(e) => setTargetPerWeek(Number(e.target.value))}
+          className={inputClasses}
+        >
+          {WEEKLY_TARGET_OPTIONS.map((n) => (
+            <option key={n} value={n}>
+              {n}x / week
+            </option>
+          ))}
+        </select>
+        <input
+          aria-label="Notes (optional)"
+          placeholder="Notes (optional)"
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          className={`flex-1 ${inputClasses}`}
+        />
+        <button
+          type="submit"
+          disabled={submitting || !name.trim()}
+          className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-emerald-700 disabled:opacity-50 disabled:hover:bg-emerald-600"
+        >
+          Add habit
+        </button>
+      </form>
+    </div>
   );
 }
