@@ -36,4 +36,39 @@ describe("HabitForm", () => {
     expect(screen.getByRole("button", { name: /add habit/i })).toBeDisabled();
     expect(onCreate).not.toHaveBeenCalled();
   });
+
+  it("clears the input immediately, so typing the next habit during an in-flight submit isn't wiped out", async () => {
+    let resolveFirst: () => void;
+    const firstSubmit = new Promise<void>((resolve) => {
+      resolveFirst = resolve;
+    });
+    const onCreate = vi.fn().mockReturnValueOnce(firstSubmit).mockResolvedValue(undefined);
+    render(<HabitForm onCreate={onCreate} />);
+
+    const input = screen.getByLabelText(/new habit name/i);
+    const addButton = screen.getByRole("button", { name: /add habit/i });
+
+    await userEvent.type(input, "Habit A");
+    await userEvent.click(addButton);
+    expect(input).toHaveValue("");
+
+    await userEvent.type(input, "Habit B");
+    expect(input).toHaveValue("Habit B");
+    expect(addButton).toBeDisabled(); // first submit still in flight
+
+    resolveFirst!();
+    await screen.findByDisplayValue("Habit B");
+    expect(addButton).toBeEnabled();
+  });
+
+  it("restores the typed name if creating the habit fails", async () => {
+    const onCreate = vi.fn().mockRejectedValue(new Error("network error"));
+    render(<HabitForm onCreate={onCreate} />);
+
+    const input = screen.getByLabelText(/new habit name/i);
+    await userEvent.type(input, "Drink water");
+    await userEvent.click(screen.getByRole("button", { name: /add habit/i }));
+
+    await screen.findByDisplayValue("Drink water");
+  });
 });

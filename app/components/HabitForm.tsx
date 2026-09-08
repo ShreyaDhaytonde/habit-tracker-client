@@ -23,11 +23,15 @@ export default function HabitForm({ onCreate }: HabitFormProps) {
     e.preventDefault();
     const trimmed = name.trim();
     if (!trimmed) return;
+    const trimmedNotes = notes.trim();
     setSubmitting(true);
+    setName("");
+    setNotes("");
     try {
-      await onCreate(trimmed, category, targetPerWeek, notes.trim());
-      setName("");
-      setNotes("");
+      await onCreate(trimmed, category, targetPerWeek, trimmedNotes);
+    } catch {
+      setName(trimmed);
+      setNotes(trimmedNotes);
     } finally {
       setSubmitting(false);
     }

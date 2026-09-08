@@ -94,11 +94,16 @@ export default function Home() {
   }
 
   async function handleArchiveToggle(id: number, archived: boolean) {
-    const updated = await updateHabit(id, { archived });
-    if (archived && !showArchived) {
-      setHabits((prev) => prev.filter((h) => h.id !== id));
-    } else {
-      setHabits((prev) => prev.map((h) => (h.id === id ? updated : h)));
+    try {
+      const updated = await updateHabit(id, { archived });
+      if (archived && !showArchived) {
+        setHabits((prev) => prev.filter((h) => h.id !== id));
+      } else {
+        setHabits((prev) => prev.map((h) => (h.id === id ? updated : h)));
+      }
+    } catch {
+      setError("Could not update that habit — refreshing the list.");
+      loadHabits(categoryFilter, showArchived);
     }
   }
 
@@ -116,9 +121,15 @@ export default function Home() {
   async function handleCompleteAll() {
     setCompletingAll(true);
     try {
-      const updates = await Promise.all(pendingToday.map((h) => completeHabit(h.id)));
-      const updatesById = new Map(updates.map((h) => [h.id, h]));
+      const results = await Promise.allSettled(pendingToday.map((h) => completeHabit(h.id)));
+      const updatesById = new Map(
+        results
+          .filter((r): r is PromiseFulfilledResult<Habit> => r.status === "fulfilled")
+          .map((r) => [r.value.id, r.value])
+      );
       setHabits((prev) => prev.map((h) => updatesById.get(h.id) ?? h));
+      const failedCount = results.length - updatesById.size;
+      setError(failedCount > 0 ? `Completed ${updatesById.size}/${results.length} habits — ${failedCount} failed. Try again.` : null);
     } finally {
       setCompletingAll(false);
     }
