@@ -4,6 +4,8 @@ import HabitCard from "@/app/components/HabitCard";
 interface HabitListProps {
   habits: Habit[];
   onComplete: (id: number) => void;
+  onSkip: (id: number) => void;
+  onUnskip: (id: number) => void;
   onDelete: (id: number) => void;
   onEdit: (
     id: number,
@@ -19,6 +21,8 @@ interface HabitListProps {
 export default function HabitList({
   habits,
   onComplete,
+  onSkip,
+  onUnskip,
   onDelete,
   onEdit,
   onArchiveToggle,
@@ -39,6 +43,8 @@ export default function HabitList({
           key={habit.id}
           habit={habit}
           onComplete={onComplete}
+          onSkip={onSkip}
+          onUnskip={onUnskip}
           onDelete={onDelete}
           onEdit={onEdit}
           onArchiveToggle={onArchiveToggle}

@@ -6,7 +6,15 @@ import HabitForm from "@/app/components/HabitForm";
 import HabitList from "@/app/components/HabitList";
 import LogoutButton from "@/app/components/LogoutButton";
 import ThemeToggle from "@/app/components/ThemeToggle";
-import { completeHabit, createHabit, deleteHabit, listHabits, updateHabit } from "@/app/lib/api";
+import {
+  completeHabit,
+  createHabit,
+  deleteHabit,
+  listHabits,
+  skipHabit,
+  unskipHabit,
+  updateHabit,
+} from "@/app/lib/api";
 import { downloadFile, habitsToCsv, habitsToJson } from "@/app/lib/export";
 import { filterHabitsByName, sortHabits } from "@/app/lib/filterSort";
 import type { HabitSortKey } from "@/app/lib/filterSort";
@@ -69,6 +77,16 @@ export default function Home() {
 
   async function handleComplete(id: number) {
     const updated = await completeHabit(id);
+    setHabits((prev) => prev.map((h) => (h.id === id ? updated : h)));
+  }
+
+  async function handleSkip(id: number) {
+    const updated = await skipHabit(id);
+    setHabits((prev) => prev.map((h) => (h.id === id ? updated : h)));
+  }
+
+  async function handleUnskip(id: number) {
+    const updated = await unskipHabit(id);
     setHabits((prev) => prev.map((h) => (h.id === id ? updated : h)));
   }
 
@@ -251,6 +269,8 @@ export default function Home() {
           <HabitList
             habits={visibleHabits}
             onComplete={handleComplete}
+            onSkip={handleSkip}
+            onUnskip={handleUnskip}
             onDelete={handleDelete}
             onEdit={handleEdit}
             onArchiveToggle={handleArchiveToggle}

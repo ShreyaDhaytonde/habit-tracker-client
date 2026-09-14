@@ -14,6 +14,8 @@ describe("HabitCard", () => {
       <HabitCard
         habit={makeMockHabit({ name: "Meditate", category: "Health", streak: 5 })}
         onComplete={vi.fn()}
+        onSkip={vi.fn()}
+        onUnskip={vi.fn()}
         onDelete={vi.fn()}
         onEdit={vi.fn()}
         onArchiveToggle={vi.fn()}
@@ -29,6 +31,8 @@ describe("HabitCard", () => {
       <HabitCard
         habit={makeMockHabit({ name: "Meditate", at_risk: true })}
         onComplete={vi.fn()}
+        onSkip={vi.fn()}
+        onUnskip={vi.fn()}
         onDelete={vi.fn()}
         onEdit={vi.fn()}
         onArchiveToggle={vi.fn()}
@@ -42,6 +46,8 @@ describe("HabitCard", () => {
       <HabitCard
         habit={makeMockHabit({ name: "Meditate", at_risk: false })}
         onComplete={vi.fn()}
+        onSkip={vi.fn()}
+        onUnskip={vi.fn()}
         onDelete={vi.fn()}
         onEdit={vi.fn()}
         onArchiveToggle={vi.fn()}
@@ -55,6 +61,8 @@ describe("HabitCard", () => {
       <HabitCard
         habit={makeMockHabit({ name: "Meditate", streak: 0 })}
         onComplete={vi.fn()}
+        onSkip={vi.fn()}
+        onUnskip={vi.fn()}
         onDelete={vi.fn()}
         onEdit={vi.fn()}
         onArchiveToggle={vi.fn()}
@@ -73,6 +81,8 @@ describe("HabitCard", () => {
           completed_this_week: 2,
         })}
         onComplete={vi.fn()}
+        onSkip={vi.fn()}
+        onUnskip={vi.fn()}
         onDelete={vi.fn()}
         onEdit={vi.fn()}
         onArchiveToggle={vi.fn()}
@@ -89,6 +99,8 @@ describe("HabitCard", () => {
       <HabitCard
         habit={makeMockHabit({ name: "Run", target_per_week: 3, completed_this_week: 3 })}
         onComplete={vi.fn()}
+        onSkip={vi.fn()}
+        onUnskip={vi.fn()}
         onDelete={vi.fn()}
         onEdit={vi.fn()}
         onArchiveToggle={vi.fn()}
@@ -103,6 +115,8 @@ describe("HabitCard", () => {
       <HabitCard
         habit={makeMockHabit({ name: "Run", target_per_week: 3, completed_this_week: 2 })}
         onComplete={vi.fn()}
+        onSkip={vi.fn()}
+        onUnskip={vi.fn()}
         onDelete={vi.fn()}
         onEdit={vi.fn()}
         onArchiveToggle={vi.fn()}
@@ -117,6 +131,8 @@ describe("HabitCard", () => {
       <HabitCard
         habit={makeMockHabit({ id: 7, completed_today: false })}
         onComplete={onComplete}
+        onSkip={vi.fn()}
+        onUnskip={vi.fn()}
         onDelete={vi.fn()}
         onEdit={vi.fn()}
         onArchiveToggle={vi.fn()}
@@ -131,6 +147,8 @@ describe("HabitCard", () => {
       <HabitCard
         habit={makeMockHabit({ completed_today: true })}
         onComplete={vi.fn()}
+        onSkip={vi.fn()}
+        onUnskip={vi.fn()}
         onDelete={vi.fn()}
         onEdit={vi.fn()}
         onArchiveToggle={vi.fn()}
@@ -146,6 +164,8 @@ describe("HabitCard", () => {
       <HabitCard
         habit={makeMockHabit({ id: 3, name: "Stretch" })}
         onComplete={vi.fn()}
+        onSkip={vi.fn()}
+        onUnskip={vi.fn()}
         onDelete={onDelete}
         onEdit={vi.fn()}
         onArchiveToggle={vi.fn()}
@@ -163,6 +183,8 @@ describe("HabitCard", () => {
       <HabitCard
         habit={makeMockHabit({ id: 3, name: "Stretch" })}
         onComplete={vi.fn()}
+        onSkip={vi.fn()}
+        onUnskip={vi.fn()}
         onDelete={onDelete}
         onEdit={vi.fn()}
         onArchiveToggle={vi.fn()}
@@ -177,6 +199,8 @@ describe("HabitCard", () => {
       <HabitCard
         habit={makeMockHabit({ name: "Stretch" })}
         onComplete={vi.fn()}
+        onSkip={vi.fn()}
+        onUnskip={vi.fn()}
         onDelete={vi.fn()}
         onEdit={vi.fn()}
         onArchiveToggle={vi.fn()}
@@ -193,6 +217,8 @@ describe("HabitCard", () => {
       <HabitCard
         habit={makeMockHabit({ id: 5, name: "Stretch", category: "General", target_per_week: 7 })}
         onComplete={vi.fn()}
+        onSkip={vi.fn()}
+        onUnskip={vi.fn()}
         onDelete={vi.fn()}
         onEdit={onEdit}
         onArchiveToggle={vi.fn()}
@@ -206,12 +232,78 @@ describe("HabitCard", () => {
     expect(onEdit).toHaveBeenCalledWith(5, "Stretch daily", "General", 7, "");
   });
 
+  it("shows a frozen badge when the habit is skipped today", () => {
+    render(
+      <HabitCard
+        habit={makeMockHabit({ name: "Meditate", skipped_today: true })}
+        onComplete={vi.fn()}
+        onSkip={vi.fn()}
+        onUnskip={vi.fn()}
+        onDelete={vi.fn()}
+        onEdit={vi.fn()}
+        onArchiveToggle={vi.fn()}
+      />
+    );
+    expect(screen.getByText(/frozen today/i)).toBeInTheDocument();
+  });
+
+  it("calls onSkip with the habit id when freezing", async () => {
+    const onSkip = vi.fn();
+    render(
+      <HabitCard
+        habit={makeMockHabit({ id: 8, skipped_today: false })}
+        onComplete={vi.fn()}
+        onSkip={onSkip}
+        onUnskip={vi.fn()}
+        onDelete={vi.fn()}
+        onEdit={vi.fn()}
+        onArchiveToggle={vi.fn()}
+      />
+    );
+    await userEvent.click(screen.getByRole("button", { name: /freeze/i }));
+    expect(onSkip).toHaveBeenCalledWith(8);
+  });
+
+  it("calls onUnskip with the habit id when already frozen", async () => {
+    const onUnskip = vi.fn();
+    render(
+      <HabitCard
+        habit={makeMockHabit({ id: 8, skipped_today: true })}
+        onComplete={vi.fn()}
+        onSkip={vi.fn()}
+        onUnskip={onUnskip}
+        onDelete={vi.fn()}
+        onEdit={vi.fn()}
+        onArchiveToggle={vi.fn()}
+      />
+    );
+    await userEvent.click(screen.getByRole("button", { name: /unfreeze/i }));
+    expect(onUnskip).toHaveBeenCalledWith(8);
+  });
+
+  it("disables the freeze button once already completed today", () => {
+    render(
+      <HabitCard
+        habit={makeMockHabit({ completed_today: true, skipped_today: false })}
+        onComplete={vi.fn()}
+        onSkip={vi.fn()}
+        onUnskip={vi.fn()}
+        onDelete={vi.fn()}
+        onEdit={vi.fn()}
+        onArchiveToggle={vi.fn()}
+      />
+    );
+    expect(screen.getByRole("button", { name: /freeze/i })).toBeDisabled();
+  });
+
   it("returns to the normal view without calling onEdit when cancelled", async () => {
     const onEdit = vi.fn();
     render(
       <HabitCard
         habit={makeMockHabit({ name: "Stretch" })}
         onComplete={vi.fn()}
+        onSkip={vi.fn()}
+        onUnskip={vi.fn()}
         onDelete={vi.fn()}
         onEdit={onEdit}
         onArchiveToggle={vi.fn()}

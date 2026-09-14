@@ -9,12 +9,15 @@ export interface Habit {
   streak: number;
   completed_today: boolean;
   completed_days: string[];
+  skipped_today: boolean;
+  skipped_days: string[];
   at_risk: boolean;
 }
 
 export interface HabitStats {
   total_habits: number;
   completed_today: number;
+  skipped_today: number;
   active_streaks: number;
   best_streak: number;
   total_completions: number;

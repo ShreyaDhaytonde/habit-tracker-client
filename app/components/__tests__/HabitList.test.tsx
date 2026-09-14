@@ -5,13 +5,13 @@ import { MOCK_HABITS } from "@/test/mock-data";
 
 describe("HabitList", () => {
   it("shows an empty state when there are no habits", () => {
-    render(<HabitList habits={[]} onComplete={vi.fn()} onDelete={vi.fn()} onEdit={vi.fn()} onArchiveToggle={vi.fn()} />);
+    render(<HabitList habits={[]} onComplete={vi.fn()} onSkip={vi.fn()} onUnskip={vi.fn()} onDelete={vi.fn()} onEdit={vi.fn()} onArchiveToggle={vi.fn()} />);
     expect(screen.getByText(/no habits yet/i)).toBeInTheDocument();
   });
 
   it("renders one card per habit", () => {
     render(
-      <HabitList habits={MOCK_HABITS} onComplete={vi.fn()} onDelete={vi.fn()} onEdit={vi.fn()} onArchiveToggle={vi.fn()} />
+      <HabitList habits={MOCK_HABITS} onComplete={vi.fn()} onSkip={vi.fn()} onUnskip={vi.fn()} onDelete={vi.fn()} onEdit={vi.fn()} onArchiveToggle={vi.fn()} />
     );
     expect(screen.getByText("Drink water")).toBeInTheDocument();
     expect(screen.getByText("Read")).toBeInTheDocument();
@@ -21,7 +21,7 @@ describe("HabitList", () => {
     render(
       <HabitList
         habits={[]}
-        onComplete={vi.fn()}
+        onComplete={vi.fn()} onSkip={vi.fn()} onUnskip={vi.fn()}
         onDelete={vi.fn()}
         onEdit={vi.fn()} onArchiveToggle={vi.fn()}
         emptyMessage='No habits in the "Health" category yet.'

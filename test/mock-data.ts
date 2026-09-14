@@ -12,6 +12,8 @@ export function makeMockHabit(overrides: Partial<Habit> = {}): Habit {
     streak: 0,
     completed_today: false,
     completed_days: [],
+    skipped_today: false,
+    skipped_days: [],
     at_risk: false,
     ...overrides,
   };
@@ -21,6 +23,7 @@ export function makeMockStats(overrides: Partial<HabitStats> = {}): HabitStats {
   return {
     total_habits: 3,
     completed_today: 2,
+    skipped_today: 0,
     active_streaks: 2,
     best_streak: 5,
     total_completions: 12,

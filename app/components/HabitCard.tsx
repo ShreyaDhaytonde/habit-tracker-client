@@ -13,6 +13,8 @@ const GHOST_BUTTON_CLASSES =
 interface HabitCardProps {
   habit: Habit;
   onComplete: (id: number) => void;
+  onSkip: (id: number) => void;
+  onUnskip: (id: number) => void;
   onDelete: (id: number) => void;
   onEdit: (
     id: number,
@@ -27,6 +29,8 @@ interface HabitCardProps {
 export default function HabitCard({
   habit,
   onComplete,
+  onSkip,
+  onUnskip,
   onDelete,
   onEdit,
   onArchiveToggle,
@@ -136,6 +140,15 @@ export default function HabitCard({
               ⏰ Due today
             </span>
           )}
+          {habit.skipped_today && (
+            <span
+              role="status"
+              aria-label={`${habit.name} is frozen today`}
+              className="shrink-0 whitespace-nowrap rounded-full bg-sky-100 px-2 py-0.5 text-xs font-medium text-sky-700 dark:bg-sky-900/40 dark:text-sky-400"
+            >
+              🧊 Frozen today
+            </span>
+          )}
         </div>
         <p className="text-sm text-zinc-500">
           {habit.streak === 0
@@ -176,6 +189,16 @@ export default function HabitCard({
           className="rounded-full bg-emerald-600 px-4 py-1.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-emerald-700 disabled:opacity-50 disabled:hover:bg-emerald-600"
         >
           {habit.completed_today ? "Done today" : "Mark done"}
+        </button>
+        <button
+          onClick={() => (habit.skipped_today ? onUnskip(habit.id) : onSkip(habit.id))}
+          disabled={habit.completed_today || habit.archived}
+          aria-label={
+            habit.skipped_today ? `Unfreeze ${habit.name}` : `Freeze ${habit.name} for today`
+          }
+          className={`${GHOST_BUTTON_CLASSES} ${habit.skipped_today ? "bg-sky-100 text-sky-700 hover:bg-sky-200 hover:text-sky-800 dark:bg-sky-900/40 dark:text-sky-400" : ""}`}
+        >
+          {habit.skipped_today ? "Unfreeze" : "🧊 Freeze"}
         </button>
         <button onClick={startEditing} aria-label={`Edit ${habit.name}`} className={GHOST_BUTTON_CLASSES}>
           Edit
