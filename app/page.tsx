@@ -169,6 +169,9 @@ export default function Home() {
             <p className="text-sm text-zinc-500">Build small daily habits, one day at a time.</p>
           </div>
           <div className="flex items-center gap-1">
+            <Link href="/history" className={secondaryButtonClasses}>
+              History
+            </Link>
             <Link href="/stats" className={secondaryButtonClasses}>
               View stats
             </Link>

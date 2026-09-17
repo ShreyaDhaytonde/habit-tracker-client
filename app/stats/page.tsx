@@ -31,6 +31,9 @@ export default function Stats() {
             <p className="text-sm text-zinc-500">How your habits are tracking overall.</p>
           </div>
           <div className="flex items-center gap-1">
+            <Link href="/history" className="rounded-full px-3 py-1 text-sm text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-zinc-100">
+              History
+            </Link>
             <ThemeToggle />
             <LogoutButton />
           </div>
