@@ -7,8 +7,10 @@ import { HABIT_CATEGORIES, WEEKLY_TARGET_OPTIONS } from "@/app/types/HabitTypes"
 
 const INPUT_CLASSES =
   "rounded-lg border border-zinc-300 px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 dark:border-zinc-700 dark:bg-zinc-900";
+// py-1.5 matches the primary "Mark done" button's vertical padding so every
+// button in the action row sits at the same height, not just the same baseline.
 const GHOST_BUTTON_CLASSES =
-  "rounded-full px-3 py-1 text-sm text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-zinc-100";
+  "rounded-full px-3 py-1.5 text-sm text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-zinc-100";
 
 interface HabitCardProps {
   habit: Habit;
@@ -122,7 +124,7 @@ export default function HabitCard({
   }
 
   return (
-    <li className="flex items-center justify-between gap-4 rounded-xl border border-zinc-200 bg-white px-4 py-4 shadow-sm transition-shadow hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900/40">
+    <li className="flex flex-col gap-4 rounded-xl border border-zinc-200 bg-white px-4 py-4 shadow-sm transition-shadow hover:shadow-md sm:flex-row sm:items-center sm:justify-between dark:border-zinc-800 dark:bg-zinc-900/40">
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
           <p className="font-medium">{habit.name}</p>
@@ -174,7 +176,7 @@ export default function HabitCard({
               }}
             />
           </div>
-          <span className="text-xs text-zinc-500">
+          <span className="shrink-0 whitespace-nowrap text-xs text-zinc-500">
             {goalReached
               ? "🎉 Weekly goal reached"
               : `${habit.completed_this_week}/${habit.target_per_week} this week`}
@@ -182,7 +184,7 @@ export default function HabitCard({
         </div>
         {habit.notes && <p className="mt-1 text-xs text-zinc-500 italic">{habit.notes}</p>}
       </div>
-      <div className="flex shrink-0 flex-wrap items-center justify-end gap-1">
+      <div className="flex flex-wrap items-center gap-1 sm:shrink-0 sm:justify-end">
         <button
           onClick={() => onComplete(habit.id)}
           disabled={habit.completed_today || habit.archived}
