@@ -175,6 +175,9 @@ export default function Home() {
             <Link href="/stats" className={secondaryButtonClasses}>
               View stats
             </Link>
+            <Link href="/archive" className={secondaryButtonClasses}>
+              Archive
+            </Link>
             <ThemeToggle />
             <LogoutButton />
           </div>
