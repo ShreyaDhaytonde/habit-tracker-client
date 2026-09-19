@@ -15,6 +15,7 @@ interface HabitListProps {
     notes: string
   ) => Promise<void>;
   onArchiveToggle: (id: number, archived: boolean) => void;
+  onDuplicate: (id: number) => void;
   emptyMessage?: string;
 }
 
@@ -26,6 +27,7 @@ export default function HabitList({
   onDelete,
   onEdit,
   onArchiveToggle,
+  onDuplicate,
   emptyMessage = "No habits yet — add one above to get started.",
 }: HabitListProps) {
   if (habits.length === 0) {
@@ -48,6 +50,7 @@ export default function HabitList({
           onDelete={onDelete}
           onEdit={onEdit}
           onArchiveToggle={onArchiveToggle}
+          onDuplicate={onDuplicate}
         />
       ))}
     </ul>

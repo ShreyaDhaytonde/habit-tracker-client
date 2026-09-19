@@ -7,6 +7,7 @@ import LogoutButton from "@/app/components/LogoutButton";
 import ThemeToggle from "@/app/components/ThemeToggle";
 import {
   completeHabit,
+  createHabit,
   deleteHabit,
   listHabits,
   skipHabit,
@@ -69,6 +70,23 @@ export default function Archive() {
     setHabits((prev) => prev.map((h) => (h.id === id ? updated : h)));
   }
 
+  async function handleDuplicate(id: number) {
+    const source = habits.find((h) => h.id === id);
+    if (!source) return;
+    try {
+      // The copy is always created active (createHabit has no archived flag),
+      // so it belongs on the home page, not in this archived-only list.
+      await createHabit(
+        `${source.name} (copy)`,
+        source.category,
+        source.target_per_week,
+        source.notes ?? undefined
+      );
+    } catch {
+      setError("Could not duplicate that habit — try again.");
+    }
+  }
+
   async function handleArchiveToggle(id: number, archived: boolean) {
     try {
       const updated = await updateHabit(id, { archived });
@@ -117,6 +135,7 @@ export default function Archive() {
             onDelete={handleDelete}
             onEdit={handleEdit}
             onArchiveToggle={handleArchiveToggle}
+            onDuplicate={handleDuplicate}
             emptyMessage="No archived habits — anything you archive from the home page shows up here."
           />
         )}

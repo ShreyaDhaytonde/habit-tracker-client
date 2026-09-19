@@ -19,6 +19,7 @@ describe("HabitCard", () => {
         onDelete={vi.fn()}
         onEdit={vi.fn()}
         onArchiveToggle={vi.fn()}
+        onDuplicate={vi.fn()}
       />
     );
     expect(screen.getByText("Meditate")).toBeInTheDocument();
@@ -36,6 +37,7 @@ describe("HabitCard", () => {
         onDelete={vi.fn()}
         onEdit={vi.fn()}
         onArchiveToggle={vi.fn()}
+        onDuplicate={vi.fn()}
       />
     );
     expect(screen.getByText(/due today/i)).toBeInTheDocument();
@@ -51,6 +53,7 @@ describe("HabitCard", () => {
         onDelete={vi.fn()}
         onEdit={vi.fn()}
         onArchiveToggle={vi.fn()}
+        onDuplicate={vi.fn()}
       />
     );
     expect(screen.queryByText(/due today/i)).not.toBeInTheDocument();
@@ -66,6 +69,7 @@ describe("HabitCard", () => {
         onDelete={vi.fn()}
         onEdit={vi.fn()}
         onArchiveToggle={vi.fn()}
+        onDuplicate={vi.fn()}
       />
     );
     expect(screen.getByText(/start your streak today/i)).toBeInTheDocument();
@@ -86,6 +90,7 @@ describe("HabitCard", () => {
         onDelete={vi.fn()}
         onEdit={vi.fn()}
         onArchiveToggle={vi.fn()}
+        onDuplicate={vi.fn()}
       />
     );
     expect(screen.getByText("2/3 this week")).toBeInTheDocument();
@@ -104,6 +109,7 @@ describe("HabitCard", () => {
         onDelete={vi.fn()}
         onEdit={vi.fn()}
         onArchiveToggle={vi.fn()}
+        onDuplicate={vi.fn()}
       />
     );
     expect(screen.getByText(/goal reached/i)).toBeInTheDocument();
@@ -120,6 +126,7 @@ describe("HabitCard", () => {
         onDelete={vi.fn()}
         onEdit={vi.fn()}
         onArchiveToggle={vi.fn()}
+        onDuplicate={vi.fn()}
       />
     );
     expect(screen.queryByText("🎉 Goal reached")).not.toBeInTheDocument();
@@ -136,6 +143,7 @@ describe("HabitCard", () => {
         onDelete={vi.fn()}
         onEdit={vi.fn()}
         onArchiveToggle={vi.fn()}
+        onDuplicate={vi.fn()}
       />
     );
     await userEvent.click(screen.getByRole("button", { name: /mark done/i }));
@@ -152,6 +160,7 @@ describe("HabitCard", () => {
         onDelete={vi.fn()}
         onEdit={vi.fn()}
         onArchiveToggle={vi.fn()}
+        onDuplicate={vi.fn()}
       />
     );
     expect(screen.getByRole("button", { name: /done today/i })).toBeDisabled();
@@ -169,11 +178,30 @@ describe("HabitCard", () => {
         onDelete={onDelete}
         onEdit={vi.fn()}
         onArchiveToggle={vi.fn()}
+        onDuplicate={vi.fn()}
       />
     );
     await userEvent.click(screen.getByRole("button", { name: /delete stretch/i }));
     expect(window.confirm).toHaveBeenCalledWith(expect.stringContaining("Stretch"));
     expect(onDelete).toHaveBeenCalledWith(3);
+  });
+
+  it("calls onDuplicate with the habit id when Duplicate is clicked", async () => {
+    const onDuplicate = vi.fn();
+    render(
+      <HabitCard
+        habit={makeMockHabit({ id: 7, name: "Stretch" })}
+        onComplete={vi.fn()}
+        onSkip={vi.fn()}
+        onUnskip={vi.fn()}
+        onDelete={vi.fn()}
+        onEdit={vi.fn()}
+        onArchiveToggle={vi.fn()}
+        onDuplicate={onDuplicate}
+      />
+    );
+    await userEvent.click(screen.getByRole("button", { name: /duplicate stretch/i }));
+    expect(onDuplicate).toHaveBeenCalledWith(7);
   });
 
   it("does not call onDelete when the user cancels the confirmation", async () => {
@@ -188,6 +216,7 @@ describe("HabitCard", () => {
         onDelete={onDelete}
         onEdit={vi.fn()}
         onArchiveToggle={vi.fn()}
+        onDuplicate={vi.fn()}
       />
     );
     await userEvent.click(screen.getByRole("button", { name: /delete stretch/i }));
@@ -204,6 +233,7 @@ describe("HabitCard", () => {
         onDelete={vi.fn()}
         onEdit={vi.fn()}
         onArchiveToggle={vi.fn()}
+        onDuplicate={vi.fn()}
       />
     );
     await userEvent.click(screen.getByRole("button", { name: /edit stretch/i }));
@@ -222,6 +252,7 @@ describe("HabitCard", () => {
         onDelete={vi.fn()}
         onEdit={onEdit}
         onArchiveToggle={vi.fn()}
+        onDuplicate={vi.fn()}
       />
     );
     await userEvent.click(screen.getByRole("button", { name: /edit stretch/i }));
@@ -242,6 +273,7 @@ describe("HabitCard", () => {
         onDelete={vi.fn()}
         onEdit={vi.fn()}
         onArchiveToggle={vi.fn()}
+        onDuplicate={vi.fn()}
       />
     );
     expect(screen.getByText(/frozen today/i)).toBeInTheDocument();
@@ -258,6 +290,7 @@ describe("HabitCard", () => {
         onDelete={vi.fn()}
         onEdit={vi.fn()}
         onArchiveToggle={vi.fn()}
+        onDuplicate={vi.fn()}
       />
     );
     await userEvent.click(screen.getByRole("button", { name: /freeze/i }));
@@ -275,6 +308,7 @@ describe("HabitCard", () => {
         onDelete={vi.fn()}
         onEdit={vi.fn()}
         onArchiveToggle={vi.fn()}
+        onDuplicate={vi.fn()}
       />
     );
     await userEvent.click(screen.getByRole("button", { name: /unfreeze/i }));
@@ -291,6 +325,7 @@ describe("HabitCard", () => {
         onDelete={vi.fn()}
         onEdit={vi.fn()}
         onArchiveToggle={vi.fn()}
+        onDuplicate={vi.fn()}
       />
     );
     expect(screen.getByRole("button", { name: /freeze/i })).toBeDisabled();
@@ -307,6 +342,7 @@ describe("HabitCard", () => {
         onDelete={vi.fn()}
         onEdit={onEdit}
         onArchiveToggle={vi.fn()}
+        onDuplicate={vi.fn()}
       />
     );
     await userEvent.click(screen.getByRole("button", { name: /edit stretch/i }));

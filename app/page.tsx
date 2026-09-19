@@ -125,6 +125,24 @@ export default function Home() {
     }
   }
 
+  async function handleDuplicate(id: number) {
+    const source = habits.find((h) => h.id === id);
+    if (!source) return;
+    try {
+      const copy = await createHabit(
+        `${source.name} (copy)`,
+        source.category,
+        source.target_per_week,
+        source.notes ?? undefined
+      );
+      if (!categoryFilter || categoryFilter === copy.category) {
+        setHabits((prev) => [...prev, copy]);
+      }
+    } catch {
+      setError("Could not duplicate that habit — try again.");
+    }
+  }
+
   function handleExportJson() {
     downloadFile(habitsToJson(habits), "habits.json", "application/json");
   }
@@ -283,6 +301,7 @@ export default function Home() {
             onDelete={handleDelete}
             onEdit={handleEdit}
             onArchiveToggle={handleArchiveToggle}
+            onDuplicate={handleDuplicate}
             emptyMessage={
               searchQuery
                 ? `No habits match "${searchQuery}".`

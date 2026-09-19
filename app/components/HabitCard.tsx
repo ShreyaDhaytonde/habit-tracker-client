@@ -26,6 +26,7 @@ interface HabitCardProps {
     notes: string
   ) => Promise<void>;
   onArchiveToggle: (id: number, archived: boolean) => void;
+  onDuplicate: (id: number) => void;
 }
 
 export default function HabitCard({
@@ -36,6 +37,7 @@ export default function HabitCard({
   onDelete,
   onEdit,
   onArchiveToggle,
+  onDuplicate,
 }: HabitCardProps) {
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(habit.name);
@@ -204,6 +206,13 @@ export default function HabitCard({
         </button>
         <button onClick={startEditing} aria-label={`Edit ${habit.name}`} className={GHOST_BUTTON_CLASSES}>
           Edit
+        </button>
+        <button
+          onClick={() => onDuplicate(habit.id)}
+          aria-label={`Duplicate ${habit.name}`}
+          className={GHOST_BUTTON_CLASSES}
+        >
+          Duplicate
         </button>
         <button
           onClick={() => onArchiveToggle(habit.id, !habit.archived)}
