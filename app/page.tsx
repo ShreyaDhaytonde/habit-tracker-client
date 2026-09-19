@@ -151,6 +151,16 @@ export default function Home() {
     downloadFile(habitsToCsv(habits), "habits.csv", "text/csv");
   }
 
+  function handleClearFilters() {
+    setSearchQuery("");
+    setCategoryFilter("");
+    setShowArchived(false);
+    setSortBy("name");
+  }
+
+  const filtersActive =
+    searchQuery !== "" || categoryFilter !== "" || showArchived || sortBy !== "name";
+
   const visibleHabits = sortHabits(filterHabitsByName(habits, searchQuery), sortBy);
   const pendingToday = visibleHabits.filter((h) => !h.completed_today && !h.archived);
 
@@ -265,6 +275,11 @@ export default function Home() {
             />
             Show archived
           </label>
+          {filtersActive && (
+            <button onClick={handleClearFilters} className={secondaryButtonClasses}>
+              Clear filters
+            </button>
+          )}
           <div className="ml-auto flex items-center gap-2">
             <button
               onClick={handleCompleteAll}
