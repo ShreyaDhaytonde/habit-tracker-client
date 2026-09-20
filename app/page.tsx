@@ -163,6 +163,8 @@ export default function Home() {
 
   const visibleHabits = sortHabits(filterHabitsByName(habits, searchQuery), sortBy);
   const pendingToday = visibleHabits.filter((h) => !h.completed_today && !h.archived);
+  const activeHabits = visibleHabits.filter((h) => !h.archived);
+  const doneToday = activeHabits.filter((h) => h.completed_today).length;
 
   async function handleCompleteAll() {
     setCompletingAll(true);
@@ -198,6 +200,11 @@ export default function Home() {
               Habit Tracker
             </h1>
             <p className="text-sm text-zinc-500">Build small daily habits, one day at a time.</p>
+            {!loading && activeHabits.length > 0 && (
+              <p className="text-xs text-zinc-400">
+                {doneToday}/{activeHabits.length} done today
+              </p>
+            )}
           </div>
           <div className="flex items-center gap-1">
             <Link href="/history" className={secondaryButtonClasses}>
