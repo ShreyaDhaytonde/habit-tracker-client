@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Habit Tracker",
-  description: "Track daily habits and streaks.",
+  description: "Track daily habits, streaks, and weekly progress.",
 };
 
 const THEME_INIT_SCRIPT = `
