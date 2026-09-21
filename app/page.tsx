@@ -200,6 +200,13 @@ export default function Home() {
               Habit Tracker
             </h1>
             <p className="text-sm text-zinc-500">Build small daily habits, one day at a time.</p>
+            <p className="text-xs text-zinc-400">
+              {new Date().toLocaleDateString(undefined, {
+                weekday: "long",
+                month: "long",
+                day: "numeric",
+              })}
+            </p>
             {!loading && activeHabits.length > 0 && (
               <p className="text-xs text-zinc-400">
                 {doneToday}/{activeHabits.length} done today
