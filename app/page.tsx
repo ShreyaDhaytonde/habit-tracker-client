@@ -20,18 +20,20 @@ import { filterHabitsByName, sortHabits } from "@/app/lib/filterSort";
 import type { HabitSortKey } from "@/app/lib/filterSort";
 import { loadViewPrefs, saveViewPrefs } from "@/app/lib/viewPrefs";
 import type { Habit } from "@/app/types/HabitTypes";
-import { HABIT_CATEGORIES } from "@/app/types/HabitTypes";
+import { HABIT_CATEGORIES, PRIORITY_LEVELS } from "@/app/types/HabitTypes";
 
 const SORT_OPTIONS: { value: HabitSortKey; label: string }[] = [
   { value: "name", label: "Name (A-Z)" },
   { value: "streak", label: "Streak (highest first)" },
   { value: "category", label: "Category" },
+  { value: "priority", label: "Priority (highest first)" },
   { value: "target_per_week", label: "Weekly target (highest first)" },
 ];
 
 export default function Home() {
   const [habits, setHabits] = useState<Habit[]>([]);
   const [categoryFilter, setCategoryFilter] = useState<string>("");
+  const [priorityFilter, setPriorityFilter] = useState<string>("");
   const [showArchived, setShowArchived] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<HabitSortKey>("name");
@@ -40,18 +42,22 @@ export default function Home() {
   const [completingAll, setCompletingAll] = useState(false);
   const [prefsRestored, setPrefsRestored] = useState(false);
 
-  const loadHabits = useCallback((category: string, includeArchived: boolean) => {
-    setLoading(true);
-    setError(null);
-    listHabits(category || undefined, includeArchived)
-      .then(setHabits)
-      .catch(() => setError("Could not load habits. Is the API running?"))
-      .finally(() => setLoading(false));
-  }, []);
+  const loadHabits = useCallback(
+    (category: string, includeArchived: boolean, priority: string) => {
+      setLoading(true);
+      setError(null);
+      listHabits(category || undefined, includeArchived, priority || undefined)
+        .then(setHabits)
+        .catch(() => setError("Could not load habits. Is the API running?"))
+        .finally(() => setLoading(false));
+    },
+    []
+  );
 
   useEffect(() => {
     const stored = loadViewPrefs();
     if (stored.categoryFilter !== undefined) setCategoryFilter(stored.categoryFilter);
+    if (stored.priorityFilter !== undefined) setPriorityFilter(stored.priorityFilter);
     if (stored.showArchived !== undefined) setShowArchived(stored.showArchived);
     if (stored.searchQuery !== undefined) setSearchQuery(stored.searchQuery);
     if (stored.sortBy !== undefined) setSortBy(stored.sortBy);
@@ -60,13 +66,13 @@ export default function Home() {
 
   useEffect(() => {
     if (!prefsRestored) return;
-    saveViewPrefs({ categoryFilter, showArchived, searchQuery, sortBy });
-  }, [prefsRestored, categoryFilter, showArchived, searchQuery, sortBy]);
+    saveViewPrefs({ categoryFilter, priorityFilter, showArchived, searchQuery, sortBy });
+  }, [prefsRestored, categoryFilter, priorityFilter, showArchived, searchQuery, sortBy]);
 
   useEffect(() => {
     if (!prefsRestored) return;
-    loadHabits(categoryFilter, showArchived);
-  }, [prefsRestored, categoryFilter, showArchived, loadHabits]);
+    loadHabits(categoryFilter, showArchived, priorityFilter);
+  }, [prefsRestored, categoryFilter, showArchived, priorityFilter, loadHabits]);
 
   async function handleCreate(name: string, category: string, targetPerWeek: number, notes: string) {
     const habit = await createHabit(name, category, targetPerWeek, notes);
@@ -121,7 +127,7 @@ export default function Home() {
       }
     } catch {
       setError("Could not update that habit — refreshing the list.");
-      loadHabits(categoryFilter, showArchived);
+      loadHabits(categoryFilter, showArchived, priorityFilter);
     }
   }
 
@@ -133,13 +139,34 @@ export default function Home() {
         `${source.name} (copy)`,
         source.category,
         source.target_per_week,
-        source.notes ?? undefined
+        source.notes ?? undefined,
+        source.priority
       );
       if (!categoryFilter || categoryFilter === copy.category) {
         setHabits((prev) => [...prev, copy]);
       }
     } catch {
       setError("Could not duplicate that habit — try again.");
+    }
+  }
+
+  async function handlePinToggle(id: number, pinned: boolean) {
+    try {
+      const updated = await updateHabit(id, { pinned });
+      setHabits((prev) => prev.map((h) => (h.id === id ? updated : h)));
+    } catch {
+      setError("Could not update that habit — refreshing the list.");
+      loadHabits(categoryFilter, showArchived, priorityFilter);
+    }
+  }
+
+  async function handlePriorityChange(id: number, priority: string) {
+    try {
+      const updated = await updateHabit(id, { priority });
+      setHabits((prev) => prev.map((h) => (h.id === id ? updated : h)));
+    } catch {
+      setError("Could not update that habit — refreshing the list.");
+      loadHabits(categoryFilter, showArchived, priorityFilter);
     }
   }
 
@@ -154,12 +181,17 @@ export default function Home() {
   function handleClearFilters() {
     setSearchQuery("");
     setCategoryFilter("");
+    setPriorityFilter("");
     setShowArchived(false);
     setSortBy("name");
   }
 
   const filtersActive =
-    searchQuery !== "" || categoryFilter !== "" || showArchived || sortBy !== "name";
+    searchQuery !== "" ||
+    categoryFilter !== "" ||
+    priorityFilter !== "" ||
+    showArchived ||
+    sortBy !== "name";
 
   const visibleHabits = sortHabits(filterHabitsByName(habits, searchQuery), sortBy);
   const pendingToday = visibleHabits.filter((h) => !h.completed_today && !h.archived);
@@ -280,6 +312,25 @@ export default function Home() {
               ))}
             </select>
           </div>
+          <div className="flex items-center gap-2">
+            <label htmlFor="priority-filter" className="text-sm text-zinc-500">
+              Filter by priority
+            </label>
+            <select
+              id="priority-filter"
+              aria-label="Filter by priority"
+              value={priorityFilter}
+              onChange={(e) => setPriorityFilter(e.target.value)}
+              className={controlInputClasses}
+            >
+              <option value="">All</option>
+              {PRIORITY_LEVELS.map((p) => (
+                <option key={p} value={p}>
+                  {p}
+                </option>
+              ))}
+            </select>
+          </div>
           <label className="flex items-center gap-1.5 text-sm text-zinc-500">
             <input
               type="checkbox"
@@ -331,6 +382,8 @@ export default function Home() {
             onEdit={handleEdit}
             onArchiveToggle={handleArchiveToggle}
             onDuplicate={handleDuplicate}
+            onPinToggle={handlePinToggle}
+            onPriorityChange={handlePriorityChange}
             emptyMessage={
               searchQuery
                 ? `No habits match "${searchQuery}".`

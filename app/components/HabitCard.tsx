@@ -2,8 +2,13 @@
 
 import { useState } from "react";
 import { getCategoryBadgeClasses } from "@/app/lib/categoryColors";
+import { getPriorityBadgeClasses, nextPriority } from "@/app/lib/priorityColors";
 import type { Habit } from "@/app/types/HabitTypes";
-import { HABIT_CATEGORIES, WEEKLY_TARGET_OPTIONS } from "@/app/types/HabitTypes";
+import { HABIT_CATEGORIES, STREAK_MILESTONES, WEEKLY_TARGET_OPTIONS } from "@/app/types/HabitTypes";
+
+function milestoneReached(streak: number): number | null {
+  return STREAK_MILESTONES.find((milestone) => streak >= milestone) ?? null;
+}
 
 const INPUT_CLASSES =
   "rounded-lg border border-zinc-300 px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 dark:border-zinc-700 dark:bg-zinc-900";
@@ -27,6 +32,8 @@ interface HabitCardProps {
   ) => Promise<void>;
   onArchiveToggle: (id: number, archived: boolean) => void;
   onDuplicate: (id: number) => void;
+  onPinToggle?: (id: number, pinned: boolean) => void;
+  onPriorityChange?: (id: number, priority: string) => void;
 }
 
 export default function HabitCard({
@@ -38,6 +45,8 @@ export default function HabitCard({
   onEdit,
   onArchiveToggle,
   onDuplicate,
+  onPinToggle,
+  onPriorityChange,
 }: HabitCardProps) {
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(habit.name);
@@ -129,12 +138,46 @@ export default function HabitCard({
     <li className="flex flex-col gap-4 rounded-xl border border-zinc-200 bg-white px-4 py-4 shadow-sm transition-shadow hover:shadow-md sm:flex-row sm:items-center sm:justify-between dark:border-zinc-800 dark:bg-zinc-900/40">
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
+          {onPinToggle && (
+            <button
+              onClick={() => onPinToggle(habit.id, !habit.pinned)}
+              aria-label={habit.pinned ? `Unpin ${habit.name}` : `Pin ${habit.name}`}
+              aria-pressed={habit.pinned}
+              className={`shrink-0 leading-none ${habit.pinned ? "text-amber-500" : "text-zinc-300 hover:text-zinc-400 dark:text-zinc-600 dark:hover:text-zinc-500"}`}
+            >
+              {habit.pinned ? "★" : "☆"}
+            </button>
+          )}
           <p className="font-medium">{habit.name}</p>
           <span
             className={`shrink-0 whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-medium ${getCategoryBadgeClasses(habit.category)}`}
           >
             {habit.category}
           </span>
+          {onPriorityChange ? (
+            <button
+              onClick={() => onPriorityChange(habit.id, nextPriority(habit.priority))}
+              aria-label={`Cycle priority for ${habit.name}, currently ${habit.priority}`}
+              className={`shrink-0 whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-medium transition-colors ${getPriorityBadgeClasses(habit.priority)}`}
+            >
+              {habit.priority}
+            </button>
+          ) : (
+            <span
+              className={`shrink-0 whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-medium ${getPriorityBadgeClasses(habit.priority)}`}
+            >
+              {habit.priority}
+            </span>
+          )}
+          {milestoneReached(habit.streak) && (
+            <span
+              role="status"
+              aria-label={`${habit.name} reached a ${milestoneReached(habit.streak)}-day streak milestone`}
+              className="shrink-0 whitespace-nowrap rounded-full bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-700 dark:bg-violet-900/40 dark:text-violet-400"
+            >
+              🏆 {milestoneReached(habit.streak)}-day streak
+            </span>
+          )}
           {habit.at_risk && (
             <span
               role="status"
@@ -158,6 +201,9 @@ export default function HabitCard({
           {habit.streak === 0
             ? "Start your streak today!"
             : `🔥 ${habit.streak} day${habit.streak === 1 ? "" : "s"} streak`}
+          {habit.longest_streak > habit.streak && (
+            <span className="text-zinc-400"> · best: {habit.longest_streak}</span>
+          )}
         </p>
         <div className="mt-2 flex items-center gap-2">
           <div

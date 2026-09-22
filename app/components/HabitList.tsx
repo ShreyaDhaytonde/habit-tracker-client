@@ -16,6 +16,8 @@ interface HabitListProps {
   ) => Promise<void>;
   onArchiveToggle: (id: number, archived: boolean) => void;
   onDuplicate: (id: number) => void;
+  onPinToggle?: (id: number, pinned: boolean) => void;
+  onPriorityChange?: (id: number, priority: string) => void;
   emptyMessage?: string;
 }
 
@@ -28,6 +30,8 @@ export default function HabitList({
   onEdit,
   onArchiveToggle,
   onDuplicate,
+  onPinToggle,
+  onPriorityChange,
   emptyMessage = "No habits yet — add one above to get started.",
 }: HabitListProps) {
   if (habits.length === 0) {
@@ -51,6 +55,8 @@ export default function HabitList({
           onEdit={onEdit}
           onArchiveToggle={onArchiveToggle}
           onDuplicate={onDuplicate}
+          onPinToggle={onPinToggle}
+          onPriorityChange={onPriorityChange}
         />
       ))}
     </ul>

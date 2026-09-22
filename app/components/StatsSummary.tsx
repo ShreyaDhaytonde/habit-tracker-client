@@ -1,5 +1,6 @@
 import StatCard from "@/app/components/StatCard";
 import { getCategoryBadgeClasses, getCategoryBarClasses } from "@/app/lib/categoryColors";
+import { getPriorityBadgeClasses, getPriorityBarClasses, getPriorityWeight } from "@/app/lib/priorityColors";
 import type { HabitStats } from "@/app/types/HabitTypes";
 
 interface StatsSummaryProps {
@@ -18,6 +19,11 @@ export default function StatsSummary({ stats }: StatsSummaryProps) {
   const categories = Object.entries(stats.by_category).sort(([, a], [, b]) => b - a);
   const maxCategoryCount = Math.max(...categories.map(([, count]) => count));
 
+  const priorities = Object.entries(stats.by_priority).sort(
+    ([a], [b]) => getPriorityWeight(b) - getPriorityWeight(a)
+  );
+  const maxPriorityCount = Math.max(...priorities.map(([, count]) => count));
+
   return (
     <div className="flex flex-col gap-6">
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -34,6 +40,7 @@ export default function StatsSummary({ stats }: StatsSummaryProps) {
         />
         <StatCard label="Total completions" value={stats.total_completions} />
         <StatCard label="This week" value={`${stats.weekly_completion_rate}%`} hint="of target" />
+        <StatCard label="Pinned" value={stats.pinned_count} />
       </div>
 
       <div className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/40">
@@ -63,6 +70,28 @@ export default function StatsSummary({ stats }: StatsSummaryProps) {
                 <div
                   className={`h-full rounded-full transition-all duration-300 ${getCategoryBarClasses(category)}`}
                   style={{ width: `${(count / maxCategoryCount) * 100}%` }}
+                />
+              </div>
+              <span className="w-4 shrink-0 text-right text-zinc-500">{count}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/40">
+        <h2 className="text-sm font-medium">Habits by priority</h2>
+        <ul className="mt-3 flex flex-col gap-2.5">
+          {priorities.map(([priority, count]) => (
+            <li key={priority} className="flex items-center gap-3 text-sm">
+              <span
+                className={`w-20 shrink-0 truncate rounded-full px-2 py-0.5 text-center text-xs font-medium ${getPriorityBadgeClasses(priority)}`}
+              >
+                {priority}
+              </span>
+              <div className="h-2 flex-1 overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800">
+                <div
+                  className={`h-full rounded-full transition-all duration-300 ${getPriorityBarClasses(priority)}`}
+                  style={{ width: `${(count / maxPriorityCount) * 100}%` }}
                 />
               </div>
               <span className="w-4 shrink-0 text-right text-zinc-500">{count}</span>

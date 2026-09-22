@@ -80,7 +80,8 @@ export default function Archive() {
         `${source.name} (copy)`,
         source.category,
         source.target_per_week,
-        source.notes ?? undefined
+        source.notes ?? undefined,
+        source.priority
       );
     } catch {
       setError("Could not duplicate that habit — try again.");
@@ -95,6 +96,26 @@ export default function Archive() {
       } else {
         setHabits((prev) => prev.map((h) => (h.id === id ? updated : h)));
       }
+    } catch {
+      setError("Could not update that habit — refreshing the list.");
+      loadArchived();
+    }
+  }
+
+  async function handlePinToggle(id: number, pinned: boolean) {
+    try {
+      const updated = await updateHabit(id, { pinned });
+      setHabits((prev) => prev.map((h) => (h.id === id ? updated : h)));
+    } catch {
+      setError("Could not update that habit — refreshing the list.");
+      loadArchived();
+    }
+  }
+
+  async function handlePriorityChange(id: number, priority: string) {
+    try {
+      const updated = await updateHabit(id, { priority });
+      setHabits((prev) => prev.map((h) => (h.id === id ? updated : h)));
     } catch {
       setError("Could not update that habit — refreshing the list.");
       loadArchived();
@@ -136,6 +157,8 @@ export default function Archive() {
             onEdit={handleEdit}
             onArchiveToggle={handleArchiveToggle}
             onDuplicate={handleDuplicate}
+            onPinToggle={handlePinToggle}
+            onPriorityChange={handlePriorityChange}
             emptyMessage="No archived habits — anything you archive from the home page shows up here."
           />
         )}
