@@ -29,6 +29,9 @@ export default function History() {
               History
             </h1>
             <p className="text-sm text-zinc-500">Last 28 days for each habit.</p>
+            {!loading && habits.length > 0 && (
+              <p className="text-xs text-zinc-400">{habits.length} habit{habits.length === 1 ? "" : "s"} tracked</p>
+            )}
           </div>
           <div className="flex items-center gap-1">
             <ThemeToggle />
