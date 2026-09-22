@@ -46,7 +46,7 @@ export default function Stats() {
           ← Back to habits
         </Link>
 
-        {loading && <p className="text-sm text-zinc-500">Loading stats…</p>}
+        {loading && <p className="text-sm text-zinc-500">Crunching your stats…</p>}
         {error && <p className="text-sm text-red-600">{error}</p>}
         {!loading && !error && stats && <StatsSummary stats={stats} />}
       </main>
