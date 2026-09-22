@@ -11,3 +11,17 @@ const DEFAULT_BADGE_CLASSES = CATEGORY_BADGE_CLASSES.General;
 export function getCategoryBadgeClasses(category: string): string {
   return CATEGORY_BADGE_CLASSES[category] ?? DEFAULT_BADGE_CLASSES;
 }
+
+const CATEGORY_BAR_CLASSES: Record<string, string> = {
+  Health: "bg-emerald-500",
+  Work: "bg-blue-500",
+  Personal: "bg-fuchsia-500",
+  Learning: "bg-indigo-500",
+  General: "bg-zinc-400 dark:bg-zinc-500",
+};
+
+const DEFAULT_BAR_CLASSES = CATEGORY_BAR_CLASSES.General;
+
+export function getCategoryBarClasses(category: string): string {
+  return CATEGORY_BAR_CLASSES[category] ?? DEFAULT_BAR_CLASSES;
+}
