@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import HabitForm from "@/app/components/HabitForm";
 import HabitList from "@/app/components/HabitList";
 import LogoutButton from "@/app/components/LogoutButton";
@@ -18,6 +18,7 @@ import {
 import { downloadFile, habitsToCsv, habitsToJson } from "@/app/lib/export";
 import { filterHabitsByName, sortHabits } from "@/app/lib/filterSort";
 import type { HabitSortKey } from "@/app/lib/filterSort";
+import { parseHabitsCsv } from "@/app/lib/import";
 import { loadViewPrefs, saveViewPrefs } from "@/app/lib/viewPrefs";
 import type { Habit } from "@/app/types/HabitTypes";
 import { HABIT_CATEGORIES, PRIORITY_LEVELS } from "@/app/types/HabitTypes";
@@ -41,6 +42,8 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [completingAll, setCompletingAll] = useState(false);
   const [prefsRestored, setPrefsRestored] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const importInputRef = useRef<HTMLInputElement>(null);
 
   const loadHabits = useCallback(
     (category: string, includeArchived: boolean, priority: string) => {
@@ -176,6 +179,41 @@ export default function Home() {
 
   function handleExportCsv() {
     downloadFile(habitsToCsv(habits), "habits.csv", "text/csv");
+  }
+
+  function handleImportClick() {
+    importInputRef.current?.click();
+  }
+
+  async function handleImportFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+
+    setImporting(true);
+    setError(null);
+    try {
+      const text = await file.text();
+      const { habits: toImport, skipped } = parseHabitsCsv(text);
+      const results = await Promise.allSettled(
+        toImport.map((h) => createHabit(h.name, h.category, h.target_per_week, h.notes, h.priority))
+      );
+      const created = results.filter((r): r is PromiseFulfilledResult<Habit> => r.status === "fulfilled");
+      const failed = results.length - created.length;
+
+      if (created.length > 0) {
+        loadHabits(categoryFilter, showArchived, priorityFilter);
+      }
+
+      const parts = [`Imported ${created.length}/${toImport.length} habits`];
+      if (skipped > 0) parts.push(`${skipped} row${skipped === 1 ? "" : "s"} skipped (missing name)`);
+      if (failed > 0) parts.push(`${failed} failed`);
+      setError(toImport.length === 0 && skipped === 0 ? "That file has no importable habits." : parts.join(" — "));
+    } catch {
+      setError("Could not read that file.");
+    } finally {
+      setImporting(false);
+    }
   }
 
   function handleClearFilters() {
@@ -366,6 +404,20 @@ export default function Home() {
               className={secondaryButtonClasses}
             >
               Export CSV
+            </button>
+            <input
+              ref={importInputRef}
+              type="file"
+              accept=".csv,text/csv"
+              onChange={handleImportFile}
+              className="hidden"
+            />
+            <button
+              onClick={handleImportClick}
+              disabled={importing}
+              className={secondaryButtonClasses}
+            >
+              {importing ? "Importing…" : "Import CSV"}
             </button>
           </div>
         </div>
