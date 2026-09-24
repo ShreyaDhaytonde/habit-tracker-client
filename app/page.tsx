@@ -43,6 +43,7 @@ export default function Home() {
   const [completingAll, setCompletingAll] = useState(false);
   const [prefsRestored, setPrefsRestored] = useState(false);
   const [importing, setImporting] = useState(false);
+  const [todayLabel, setTodayLabel] = useState("");
   const importInputRef = useRef<HTMLInputElement>(null);
 
   const loadHabits = useCallback(
@@ -56,6 +57,21 @@ export default function Home() {
     },
     []
   );
+
+  useEffect(() => {
+    // Computed client-side only: the server render and the browser's first
+    // render must produce identical HTML, but locale/timezone (and the exact
+    // instant rendered) can differ between them, which was hard-failing
+    // hydration with React error #418 -- see the identical, inline
+    // `new Date().toLocaleDateString(...)` this used to be, below.
+    setTodayLabel(
+      new Date().toLocaleDateString(undefined, {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+      })
+    );
+  }, []);
 
   useEffect(() => {
     const stored = loadViewPrefs();
@@ -270,13 +286,7 @@ export default function Home() {
               Habit Tracker
             </h1>
             <p className="text-sm text-zinc-500">Build small daily habits, one day at a time.</p>
-            <p className="text-xs text-zinc-400">
-              {new Date().toLocaleDateString(undefined, {
-                weekday: "long",
-                month: "long",
-                day: "numeric",
-              })}
-            </p>
+            <p className="text-xs text-zinc-400">{todayLabel}</p>
             {!loading && activeHabits.length > 0 && (
               <p className="text-xs text-zinc-400">
                 {doneToday}/{activeHabits.length} done today
