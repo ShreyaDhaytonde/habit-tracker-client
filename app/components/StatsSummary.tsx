@@ -32,6 +32,7 @@ export default function StatsSummary({ stats }: StatsSummaryProps) {
           label="Done today"
           value={`${stats.completed_today}/${stats.total_habits}`}
         />
+        <StatCard label="Skipped today" value={stats.skipped_today} />
         <StatCard label="Active streaks" value={stats.active_streaks} />
         <StatCard
           label="Best streak"
