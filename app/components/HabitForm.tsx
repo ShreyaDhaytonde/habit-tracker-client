@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { loadDefaultWeeklyTarget } from "@/app/lib/settingsPrefs";
 import { HABIT_CATEGORIES, WEEKLY_TARGET_OPTIONS } from "@/app/types/HabitTypes";
 
 interface HabitFormProps {
@@ -18,6 +19,15 @@ export default function HabitForm({ onCreate }: HabitFormProps) {
   const [targetPerWeek, setTargetPerWeek] = useState<number>(7);
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    // Read after mount, not as the initial state -- localStorage isn't
+    // available during SSR, so reading it as the initializer would make
+    // the server and the client's first render disagree (hydration
+    // mismatch), same class of bug already fixed once in app/page.tsx.
+    const stored = loadDefaultWeeklyTarget();
+    if (stored !== null) setTargetPerWeek(stored);
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

@@ -303,6 +303,9 @@ export default function Home() {
             <Link href="/archive" className={secondaryButtonClasses}>
               Archive
             </Link>
+            <Link href="/settings" className={secondaryButtonClasses}>
+              Settings
+            </Link>
             <ThemeToggle />
             <LogoutButton />
           </div>
