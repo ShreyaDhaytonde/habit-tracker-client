@@ -43,12 +43,12 @@ export default function Settings() {
           href="/"
           className="w-fit rounded-full border border-zinc-200 px-3 py-1 text-sm text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
         >
-          ← Back to habits
+          ← Back to home page
         </Link>
 
         <div className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/40">
           <label htmlFor="default-weekly-target" className="text-sm font-medium">
-            Default weekly target
+           Weekly target
           </label>
           <p className="mb-3 text-xs text-zinc-500">
             Pre-fills "Times per week" whenever you add a new habit.
