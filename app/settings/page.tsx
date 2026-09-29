@@ -14,6 +14,7 @@ export default function Settings() {
   const [defaultTarget, setDefaultTarget] = useState<number>(7);
   const [reminderTime, setReminderTime] = useState("20:00");
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const [weekStartsMonday, setWeekStartsMonday] = useState(false);
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
@@ -31,11 +32,17 @@ export default function Settings() {
     }
 
     setSoundEnabled(localStorage.getItem("habit-sound-enabled") !== "false");
+    setWeekStartsMonday(localStorage.getItem("habit-week-starts-monday") === "true");
   }, []);
 
   function handleSoundToggle(e: React.ChangeEvent<HTMLInputElement>) {
     setSoundEnabled(e.target.checked);
     localStorage.setItem("habit-sound-enabled", String(e.target.checked));
+  }
+
+  function handleWeekStartToggle(e: React.ChangeEvent<HTMLInputElement>) {
+    setWeekStartsMonday(e.target.checked);
+    localStorage.setItem("habit-week-starts-monday", String(e.target.checked));
   }
 
   function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
@@ -162,6 +169,22 @@ export default function Settings() {
             type="checkbox"
             checked={soundEnabled}
             onChange={handleSoundToggle}
+            className="h-4 w-4 rounded border-zinc-300 dark:border-zinc-700"
+          />
+        </div>
+
+        {/* NEW FEATURE: Week start day */}
+        <div className="flex items-center justify-between rounded-xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/40">
+          <label htmlFor="week-starts-monday" className="text-sm font-medium">
+            Week starts on Monday
+          </label>
+
+          <input
+            id="week-starts-monday"
+            aria-label="Week starts on Monday"
+            type="checkbox"
+            checked={weekStartsMonday}
+            onChange={handleWeekStartToggle}
             className="h-4 w-4 rounded border-zinc-300 dark:border-zinc-700"
           />
         </div>
