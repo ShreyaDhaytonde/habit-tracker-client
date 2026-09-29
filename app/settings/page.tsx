@@ -13,6 +13,7 @@ import { WEEKLY_TARGET_OPTIONS } from "@/app/types/HabitTypes";
 export default function Settings() {
   const [defaultTarget, setDefaultTarget] = useState<number>(7);
   const [reminderTime, setReminderTime] = useState("20:00");
+  const [soundEnabled, setSoundEnabled] = useState(true);
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
@@ -28,7 +29,14 @@ export default function Settings() {
     if (storedReminderTime) {
       setReminderTime(storedReminderTime);
     }
+
+    setSoundEnabled(localStorage.getItem("habit-sound-enabled") !== "false");
   }, []);
+
+  function handleSoundToggle(e: React.ChangeEvent<HTMLInputElement>) {
+    setSoundEnabled(e.target.checked);
+    localStorage.setItem("habit-sound-enabled", String(e.target.checked));
+  }
 
   function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const value = Number(e.target.value);
@@ -140,6 +148,22 @@ export default function Settings() {
           <p className="mt-2 text-xs text-zinc-500">
             Reminder time: {reminderTime}
           </p>
+        </div>
+
+        {/* NEW FEATURE: Completion sound toggle */}
+        <div className="flex items-center justify-between rounded-xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/40">
+          <label htmlFor="sound-enabled" className="text-sm font-medium">
+            Play sound on completion
+          </label>
+
+          <input
+            id="sound-enabled"
+            aria-label="Play sound on completion"
+            type="checkbox"
+            checked={soundEnabled}
+            onChange={handleSoundToggle}
+            className="h-4 w-4 rounded border-zinc-300 dark:border-zinc-700"
+          />
         </div>
 
       </main>
